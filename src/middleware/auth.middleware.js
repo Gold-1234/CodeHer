@@ -48,3 +48,20 @@ export const verifyAuth = async(req, res, next) => {
 		})
 	}
 }
+
+export const checkAdmin = async(req, res, next) => {
+	try {
+		const user = req.user;
+		if(user.role !== "ADMIN"){
+			return res.status(403).json({
+				message: "Access Denied, Admin only."
+			})
+		}
+		next()
+	} catch (error) {
+		console.log(error);
+		return res.status(400).json({
+			error: "Not an admin."
+		})
+	}
+}

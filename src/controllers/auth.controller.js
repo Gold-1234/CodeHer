@@ -2,12 +2,14 @@ import bcrypt from "bcryptjs"
 import { db } from "../libs/db.js";
 import { UserRole } from "../generated/prisma/index.js";
 import jwt from "jsonwebtoken"
+import { ApiError } from "../utils/api-error.js";
+import { ApiResponse } from "../utils/api-response.js";
 
 export const register = async(req, res) => {
 	const { email, password, name} = req.body;
 	console.log("req on register user route");
 	if(!email || !password){
-		res.status(400).json({error: "all fields required"});
+		throw new ApiError(400, "all fields required")
 	}
 	
 	try {
@@ -16,10 +18,9 @@ export const register = async(req, res) => {
 				email
 			}
 		})
-		if(existingUser)
-			return res.status(400).json({
-			error: "User already exists."
-		})
+		if(existingUser){
+			throw new ApiError(400, "User already exists");
+		}
 
 		const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -52,12 +53,10 @@ export const register = async(req, res) => {
 			}
 		)
 
-		res.status(201).json([
+		return res.status(201).json(
+			new ApiResponse(201,
 			{
 				success: true,
-				message: "User created succesfully"
-			},
-			{
 				user:{
 					email: newUser.email,
 					role: newUser.role,
@@ -65,13 +64,22 @@ export const register = async(req, res) => {
 					name: newUser.name,
 					image: newUser.image
 				}
-			}]
-		)
+			},
+			"User registered successfully."
+		))
 	} catch (error) {
 		console.log(error)
-		res.status(400).json(
-			{error: "Error registering user"}
-		)
+		console.log(error);
+		if(error instanceof ApiError){
+			return res.status(200).json(
+				new ApiResponse(error.statusCode, null, error.message)
+			)
+		} 
+		else {
+			return res.status(500).json(
+				new ApiResponse(500, error.message, "Error creating user.")
+			)			
+		}
 	}
 }
 
@@ -85,16 +93,12 @@ export const login = async(req, res) => {
 			}	
 		})
 		if(!user){
-			res.status(404).json({
-				error: "User not found"
-			})
+			throw new ApiError(400, "User not found.")
 		}
 		const verifyUser = bcrypt.compare(password, user.password)
 	
 		if(!verifyUser){
-			res.status(401).json({
-				error: "Invalid credentials, Please check."
-			})
+			throw new ApiError(400, "Invalid credentials.")
 		}
 	
 		const token = jwt.sign(
@@ -130,9 +134,17 @@ export const login = async(req, res) => {
 			)
 	} catch (error) {
 		console.log(error);
-		res.status(400).json({
-			error: "Error logging in."
-		})
+		console.log(error);
+		if(error instanceof ApiError){
+			return res.status(200).json(
+				new ApiResponse(error.statusCode, null, error.message)
+			)
+		} 
+		else {
+			return res.status(500).json(
+				new ApiResponse(500, error.message, "Error logging in user.")
+			)			
+		}
 	}
 }
 
@@ -157,15 +169,58 @@ export const logout = async(req, res) => {
 
 export const check = async(req, res) => {
 	try {
-		res.status(200).json({
-			success: true, 
-			message: "User authenticated successfully.",
-			user: req.user
-		})
+		res.status(200).json(
+			new ApiResponse(200, {
+				success: true, 
+				message: "User authenticated successfully.",
+				user: req.user
+			})
+		)
 	} catch (error) {
 		console.log(error);
-		res.status(400).json({
-			error: "Error checking user."
-		})
+		if(error instanceof ApiError){
+			return res.status(error.statusCode).json(
+				new ApiResponse(error.statusCode, null, error.message)
+			)
+		} else {
+			return res.status(400).json(
+				new ApiResponse(400, error.message, "Error checking user.")
+			)			
+		}
 	}
+}
+
+export const createAdmin = async(req, res) => {
+	const userId = req.body.id;
+
+	try {
+		const user = await db.user.update({
+			where:{
+				id: userId,
+			},
+			data:{
+				role: UserRole.ADMIN,
+			}
+		});
+		
+		return res.status(200).json(
+			new ApiResponse(200, {
+				message: "Admin created.",
+				data: user
+			})
+		)
+	} catch (error) {
+		console.log(error);
+		if(error instanceof ApiError){
+			return res.status(error.statusCode).json(
+				new ApiResponse(error.statusCode, null, error.message)
+			)
+		} else {
+			return res.status(400).json(
+				new ApiResponse(400, error.message, "Error creating admin.")
+			)			
+		}
+	}
+	
+
 }
