@@ -8,50 +8,145 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum UserRole{
+enum UserRole {
   ADMIN
   USER
 }
 
 model User {
-  id String @id @default(uuid())
-  name String?
-  email String @unique
-  image String?
-  role UserRole @default(USER)
-  password String
+  id        String   @id @default(uuid())
+  name      String?
+  email     String   @unique
+  image     String?
+  role      UserRole @default(USER)
+  password  String
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())
 
-  problems Problem[]
-} 
+  problems       Problem[]
+  submissions    Submission[]
+  solvedProblems solvedProblem[]
+  set            Set[]
+}
 
-enum DifficultyLevel{
+enum DifficultyLevel {
   HARD
   MEDIUM
   EASY
 }
 
-model Problem{
-  id String @id @default(uuid())
-  title String
+model Problem {
+  id          String          @id @default(uuid())
+  title       String
   description String
-  difficulty DifficultyLevel 
-  tags String[]
-  userId String
-  examples Json
+  difficulty  DifficultyLevel
+  tags        String[]
+  userId      String
+  examples    Json
   constraints String
-  hints String?
-  editorial String?
+  hints       String?
+  editorial   String?
 
-  testcases Json
-  codeSnippets Json
+  testcases          Json
+  codeSnippets       Json
   referenceSolutions Json
 
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())
 
+  submissions  Submission[]
+  solvedBy     solvedProblem[]
+  problemInSet ProblemInSet[]
+
   //relationship
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
+enum Status {
+  Accepted
+  Wrong_Answer
+}
+
+model Submission {
+  id            String  @id @default(uuid())
+  userId        String
+  problemId     String
+  sourceCode    Json
+  language      String
+  stdin         String?
+  stderr        String?
+  stdout        String?
+  compileOutput String?
+  status        String //Accepted or wrong
+  memory        String?
+  time          String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime  @default(now()) @updatedAt
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  problem Problem @relation(fields: [problemId], references: [id], onDelete: Cascade)
+
+  testcases      TestcasesResult[]
+  solvedProblems solvedProblem[]
+}
+
+model TestcasesResult {
+  id           String  @id @default(uuid())
+  submissionId String
+  testCase     Int
+  stdout       String?
+  expected     String
+  stderr       String?
+  status       String
+  memory       String?
+  time         String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime  @default(now()) @updatedAt
+
+  submission Submission @relation(fields: [submissionId], references: [id], onDelete: Cascade)
+
+  @@index(submissionId)
+}
+
+model solvedProblem {
+  id           String @id @default(uuid())
+  submissionId String
+  userId       String
+  problemId    String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime  @default(now()) @updatedAt
+
+  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  problem    Problem    @relation(fields: [problemId], references: [id], onDelete: Cascade)
+  submission Submission @relation(fields: [submissionId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, problemId])
+}
+
+model Set {
+  id          String         @id @default(uuid())
+  userId      String
+  name        String
+  description String?
+  problems    ProblemInSet[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime  @default(now()) @updatedAt
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([name, userId]) // unique playlist name per user
+}
+
+model ProblemInSet {
+  id        String   @id @default(uuid())
+  setId     String
+  problemId String
+  createdAt DateTime @default(now())
+  updatedAt DateTime  @default(now()) @updatedAt
+
+  set     Set     @relation(fields: [setId], references: [id], onDelete: Cascade)
+  problem Problem @relation(fields: [problemId], references: [id], onDelete: Cascade)
+}

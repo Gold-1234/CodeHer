@@ -14,6 +14,11 @@ app.use(
 		credentials: true
 	})
 )
+app.use((req, res, next) => {
+  console.log("Request Path:", req.path); // /api/submit
+  console.log("Full URL:", req.originalUrl); // /api/submit?lang=cpp
+  next();
+});
 
 const PORT = process.env.PORT;
 
@@ -26,9 +31,14 @@ app.get('/', (req, res) => {
 
 import authRouter from "./routes/auth.routes.js";
 import problemRouter from "./routes/problem.routes.js";
+import executionRouter from "./routes/execute.routes.js"
+import submissionRouter from "./routes/submission.routes.js"
 
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/problem", problemRouter);
+app.use("/api/v1/execute-code", executionRouter);
+app.use("/api/v1/submission", submissionRouter);
+
 
 app.listen(PORT, () => {
 	console.log(`App is listening on port ${PORT}`);

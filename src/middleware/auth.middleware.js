@@ -2,6 +2,8 @@ import jwt from "jsonwebtoken"
 import { db } from "../libs/db.js"
 
 export const verifyAuth = async(req, res, next) => {
+	console.log('running verify auth');
+	
 	try {
 		const token = req.cookies.jwt
 		if(!token){

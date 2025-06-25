@@ -4,11 +4,11 @@ import { createProblem, deleteProblem, getAllProblems, getProblemById, getProble
 
 const problemRouter = Router();
 
-problemRouter.post('/create-problem', verifyAuth, checkAdmin, createProblem)
-problemRouter.get('/problems', verifyAuth, getAllProblems)
-problemRouter.get('/problem/:id', verifyAuth, getProblemById)
-problemRouter.delete('/delete-problem/:id', verifyAuth, checkAdmin, deleteProblem)
-problemRouter.put('/update-problem/:id', verifyAuth, checkAdmin, updateProblem)
-problemRouter.get('/solved-problem', verifyAuth, getProblemSolvedByUser)
+problemRouter.post('/create', verifyAuth, checkAdmin, createProblem)
+problemRouter.get('/set', verifyAuth, getAllProblems)
+problemRouter.get('/id/:id', verifyAuth, getProblemById)
+problemRouter.delete('/delete/:id', verifyAuth, checkAdmin, deleteProblem)
+problemRouter.put('/update/:id', verifyAuth, checkAdmin, updateProblem)
+problemRouter.get('/solved', verifyAuth, getProblemSolvedByUser)
 
 export default problemRouter
