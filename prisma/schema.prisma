@@ -26,7 +26,7 @@ model User {
   problems       Problem[]
   submissions    Submission[]
   solvedProblems solvedProblem[]
-  set            Set[]
+  list           List[]
 }
 
 enum DifficultyLevel {
@@ -54,9 +54,9 @@ model Problem {
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())
 
-  submissions  Submission[]
-  solvedBy     solvedProblem[]
-  problemInSet ProblemInSet[]
+  submissions   Submission[]
+  solvedBy      solvedProblem[]
+  problemInList ProblemInList[]
 
   //relationship
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -82,7 +82,7 @@ model Submission {
   time          String?
 
   createdAt DateTime @default(now())
-  updatedAt DateTime  @default(now()) @updatedAt
+  updatedAt DateTime @default(now()) @updatedAt
 
   user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
   problem Problem @relation(fields: [problemId], references: [id], onDelete: Cascade)
@@ -103,7 +103,7 @@ model TestcasesResult {
   time         String
 
   createdAt DateTime @default(now())
-  updatedAt DateTime  @default(now()) @updatedAt
+  updatedAt DateTime @default(now()) @updatedAt
 
   submission Submission @relation(fields: [submissionId], references: [id], onDelete: Cascade)
 
@@ -117,7 +117,7 @@ model solvedProblem {
   problemId    String
 
   createdAt DateTime @default(now())
-  updatedAt DateTime  @default(now()) @updatedAt
+  updatedAt DateTime @default(now()) @updatedAt
 
   user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
   problem    Problem    @relation(fields: [problemId], references: [id], onDelete: Cascade)
@@ -126,27 +126,28 @@ model solvedProblem {
   @@unique([userId, problemId])
 }
 
-model Set {
-  id          String         @id @default(uuid())
+model List {
+  id          String          @id @default(uuid())
   userId      String
   name        String
   description String?
-  problems    ProblemInSet[]
+  problems    ProblemInList[]
 
   createdAt DateTime @default(now())
-  updatedAt DateTime  @default(now()) @updatedAt
+  updatedAt DateTime @default(now()) @updatedAt
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([name, userId]) // unique playlist name per user
 }
 
-model ProblemInSet {
+model ProblemInList {
   id        String   @id @default(uuid())
-  setId     String
+  listId    String
   problemId String
   createdAt DateTime @default(now())
-  updatedAt DateTime  @default(now()) @updatedAt
+  updatedAt DateTime @default(now()) @updatedAt
 
-  set     Set     @relation(fields: [setId], references: [id], onDelete: Cascade)
+  list    List    @relation(fields: [listId], references: [id], onDelete: Cascade)
   problem Problem @relation(fields: [problemId], references: [id], onDelete: Cascade)
+  @@unique([ listId, problemId ])
 }
