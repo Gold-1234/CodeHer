@@ -1,0 +1,39 @@
+@import "tailwindcss";
+@plugin "daisyui"{
+  themes: sunset --prefersdark, cmyk --default, dracula;
+}
+
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateX(100px);
+  }
+}
+@keyframes floatFade {
+  0% {
+    opacity: 0;
+    transform: translateY(0);
+  }
+  30% {
+    opacity: var(--fade-opacity, 0.1);
+  }
+  50% {
+    opacity: var(--fade-opacity, 0.1);
+    transform: translateY(-20px);
+  }
+  70% {
+    opacity: var(--fade-opacity, 0.1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(0);
+  }
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
