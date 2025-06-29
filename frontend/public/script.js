@@ -41,8 +41,6 @@ const ModelViewer = () => {
     <model-viewer
       src="/models/scene.glb"
       alt="3D scene"
-      ar
-      ar-modes="webxr scene-viewer quick-look"
       camera-controls
       tone-mapping="neutral"
       poster="/poster.webp"
@@ -52,14 +50,6 @@ const ModelViewer = () => {
     >
       <div className="progress-bar hide" slot="progress-bar">
         <div className="update-bar"></div>
-      </div>
-
-      <button slot="ar-button" id="ar-button">
-        View in your space
-      </button>
-
-      <div id="ar-prompt">
-        <img src="/ar_hand_prompt.png" alt="AR prompt" />
       </div>
     </model-viewer>
   );

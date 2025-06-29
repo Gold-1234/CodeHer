@@ -6,10 +6,11 @@ import { ApiError } from "../utils/api-error.js";
 import { ApiResponse } from "../utils/api-response.js";
 
 export const register = async(req, res) => {
+	
 	const { email, password, name} = req.body;
 	console.log("req on register user route");
 	if(!email || !password){
-		throw new ApiError(400, "all fields required")
+		throw new ApiError(400, "All fields required")
 	}
 	
 	try {
@@ -19,7 +20,7 @@ export const register = async(req, res) => {
 			}
 		})
 		if(existingUser){
-			throw new ApiError(400, "User already exists");
+			throw new ApiError(400, "Email already exists, Please Login.");
 		}
 
 		const hashedPassword = await bcrypt.hash(password, 10);
@@ -65,7 +66,7 @@ export const register = async(req, res) => {
 					image: newUser.image
 				}
 			},
-			"User registered successfully."
+			"Registered successfully"
 		))
 	} catch (error) {
 		console.log(error)
@@ -77,7 +78,7 @@ export const register = async(req, res) => {
 		} 
 		else {
 			return res.status(500).json(
-				new ApiResponse(500, error.message, "Error creating user.")
+				new ApiResponse(500, error.message, "Error Registering, Please retry later.")
 			)			
 		}
 	}
@@ -92,20 +93,25 @@ export const login = async(req, res) => {
 				email
 			}	
 		})
+		console.log(user);
+		
 		if(!user){
-			throw new ApiError(400, "User not found.")
+			throw new ApiError(400, "User not found")
 		}
-		const verifyUser = bcrypt.compare(password, user.password)
-	
+		const verifyUser = await bcrypt.compare(password, user.password)
+		console.log(verifyUser);
+		
 		if(!verifyUser){
-			throw new ApiError(400, "Invalid credentials.")
+			throw new ApiError(400, "Invalid credentials")
 		}
-	
+		
 		const token = jwt.sign(
 			{id: user.id},
 			process.env.JWT_SECRET,
 			{expiresIn: 1000 * 60 * 60 * 24 * 7}
 		)
+		console.log(token);
+		
 		res.cookie(
 				"jwt",
 				token, 
@@ -117,32 +123,32 @@ export const login = async(req, res) => {
 				}
 			)
 	
-		res.status(201).json([
-				{
-					success: true,
-					message: "User logged in succesfully"
-				},
-				{
-					user:{
+		res.status(201).json(
+				new ApiResponse(
+					200, 
+					{
+						user:{
 						email: user.email,
 						role: user.role,
 						id: user.id,
 						name: user.name,
 						image: user.image
-					}
-				}]
+						}
+					},
+					"Logged In"
+				)
 			)
 	} catch (error) {
 		console.log(error);
 		console.log(error);
 		if(error instanceof ApiError){
-			return res.status(200).json(
+			return res.status(400).json(
 				new ApiResponse(error.statusCode, null, error.message)
 			)
 		} 
 		else {
 			return res.status(500).json(
-				new ApiResponse(500, error.message, "Error logging in user.")
+				new ApiResponse(500, error.message, "Error Logging In")
 			)			
 		}
 	}
@@ -157,7 +163,7 @@ export const logout = async(req, res) => {
 		})
 		res.status(200).json({
 			success: true,
-			message: "logout succesfull"
+			message: "Logout Successfull"
 		})
 	} catch (error) {
 		console.log(error);
@@ -172,7 +178,7 @@ export const check = async(req, res) => {
 		res.status(200).json(
 			new ApiResponse(200, {
 				success: true, 
-				message: "User authenticated successfully.",
+				message: "User authenticated successfully",
 				user: req.user
 			})
 		)
@@ -184,7 +190,7 @@ export const check = async(req, res) => {
 			)
 		} else {
 			return res.status(400).json(
-				new ApiResponse(400, error.message, "Error checking user.")
+				new ApiResponse(400, error.message, "Error checking user")
 			)			
 		}
 	}

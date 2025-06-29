@@ -1,12 +1,18 @@
 import React from 'react'
-import { AuthImagePattern } from '../components/AuthImagePattern'
+import { FloatingBackground } from '../components/floatingComponent';
+import Footer from '../components/Footer';
 
 export const HomePage = () => {
   return (
-    <>
-      <div>HomePage</div>
-      <AuthImagePattern/>
-    </>
+    <div className='min-h-screen flex flex-col items-center mt-14'>
+      
+     <div className='bg-red-500 h-400'>
+
+     </div>
+    </div>
+    
+
+    
   
   )
 }

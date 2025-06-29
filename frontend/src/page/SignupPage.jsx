@@ -5,8 +5,8 @@ import { z } from 'zod';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
 import { Code, Eye, EyeOff, Loader2, Lock, LogIn, Mail } from 'lucide-react';
-import { FloatingSymbol, FloatingBackground } from '../components/floatingComponent';
-import ModelViewer from '../components/ModelViewer';
+import { useAuthStore } from '../store/useAuthStore';
+
 
 const passValidation =	/^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#$%^&*_-]).*$/;
 
@@ -15,7 +15,7 @@ const signupSchema = z.object({
 	email: z.string().email("Enter a valid email"),
 	password: z
 				.string()
-				.min(6, "Password must be atleast 6 chars ")
+				.min(6, "Password must be atleast 6 characters ")
 				.regex(passValidation, "Password must contain an Uppercase, lowercase letter, a number and a special character."),
 	name: z.string().min(3, "Name must be at least 3 charcters.")
 })
@@ -23,9 +23,11 @@ const signupSchema = z.object({
 
 const SignupPage = () => {
 
+	const { signUp, isSigningUp, authUser } = useAuthStore();
+
 	const [showPassword, setShowPassword ] = useState(false);
 
-	const {	register, handleSubmit, setError, formState: { errors, isSubmitting }} = useForm({
+	const {	register, handleSubmit, setError, formState: { errors }} = useForm({
 		resolver: zodResolver(signupSchema),
 		defaultValues: {
 			name: "",
@@ -36,25 +38,26 @@ const SignupPage = () => {
 
 	const onSubmit = async( data ) => {	
 		try {
-			await new Promise((resolve) => setTimeout(resolve, 1000));	
 			console.log(data);
-
+			const response = await signUp(data);
+			
 			if(!data.name || !data.email || !data.password){
 				throw new Error("Missing fields.")
 			}
+			console.log(authUser);
+			
 		} catch (error) {
 			setError("root", { message: "All fields required."})
-
+			console.log(error);
+			
 		}
 	} 
   return (
 	<>
-	<div className='h-screen w-screen items-center justify-center  relative'>
-		<FloatingBackground/>
-		<div className='h-screen w-screen grid grid-cols-2 items-center overflow-hidden' >
-			
-			<form className='w-96  card bg-base-200 drop-shadow-purple-950 shadow-sm flex items-center gap-5 p-6 z-2 left-80' onSubmit={handleSubmit(onSubmit)}> 
-			
+		<form className='w-96 card bg-base-200 drop-shadow-purple-950 shadow-sm flex items-center gap-5 p-6 z-2 left-80' onSubmit={handleSubmit(onSubmit)}> 
+			<div className='h-10 w-10'>
+				<img src="codeher.svg" alt="Logo" className='text-black' />
+			</div>
 			<div className='flex flex-col items-center justify-center'>
 				<span className="card-title flex items-center justify-center text-2xl p-0">Join CodeHer </span>
 				<span className="card-body flex items-center justify-center opacity-50 p-0">Create an account to continue</span>
@@ -101,8 +104,8 @@ const SignupPage = () => {
 
 					
 
-					<button type='submit' className='btn btn-secondary w-80' disabled={isSubmitting} >
-						{ isSubmitting ? 
+					<button type='submit' className='btn btn-secondary w-80' disabled={isSigningUp} >
+						{ isSigningUp ? 
 							<span className="loading loading-dots loading-lg bg-white" style={{ backgroundColor: '#5654df' }}></span> : "Sign up"}
 					</button>
 					{errors.root && <div className='text-red-500'>{errors.root.message}</div>}
@@ -121,11 +124,6 @@ const SignupPage = () => {
 				</div>
 				<span>Already have an account? <Link to="/login" className='link link-secondary link-hover'>Log In</Link> </span>
 			</form>
-			<ModelViewer className='z-50'/>
-		</div>
-			
-		
-		</div>
 	</>
   )
 }

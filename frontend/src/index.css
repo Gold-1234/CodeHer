@@ -37,3 +37,21 @@
   animation: float 3s ease-in-out infinite;
 }
 
+
+.montserrat-bold {
+  font-family: "Montserrat", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 600;
+  font-style: normal;
+}
+
+:root {
+  --color-primary: #EB7896;
+  --color-secondary-content: #aeb8c7;
+  --color-secondary: #8676E5;
+  
+}
+
+/* body {
+  overflow:auto
+} */

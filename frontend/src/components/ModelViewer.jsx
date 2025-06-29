@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import "../styles.css"; // Your CSS file
-import '@google/model-viewer'; // <- Make sure this is included
+import '@google/model-viewer'; 
 
 const ModelViewer = () => {
   useEffect(() => {
@@ -25,20 +25,20 @@ const ModelViewer = () => {
   viewer.addEventListener("progress", onProgress);
 
   // ✅ Delay to let model-viewer initialize before accessing `loaded`
-  const checkLoaded = () => {
-    if (viewer.loaded && typeof viewer.loaded.then === "function") {
-      viewer.loaded.then(() => {
-        console.log("✅ GLB Model fully loaded");
-      });
-    } else {
-      // Try again after a short delay
-      console.log('not loaded');
+  // const checkLoaded = () => {
+  //   if (viewer.loaded && typeof viewer.loaded.then === "function") {
+  //     viewer.loaded.then(() => {
+  //       console.log("✅ GLB Model fully loaded");
+  //     });
+  //   } else {
+  //     // Try again after a short delay
+  //     console.log('not loaded');
       
-      setTimeout(checkLoaded, 100);
-    }
-  };
+  //     setTimeout(checkLoaded, 1000);
+  //   }
+  // };
 
-  checkLoaded();
+  // checkLoaded();
 
   return () => {
     viewer.removeEventListener("progress", onProgress);
@@ -49,8 +49,6 @@ const ModelViewer = () => {
     <model-viewer
       src="/models/scene.glb"
       alt="3D Model"
-      ar
-      ar-modes="webxr scene-viewer quick-look"
       camera-controls
       tone-mapping="neutral"
       poster="/poster.webp"
@@ -62,13 +60,7 @@ const ModelViewer = () => {
       <div className="progress-bar hide" slot="progress-bar">
         <div className="update-bar"></div>
       </div>
-      <button slot="ar-button" id="ar-button">
-        View in your space
-      </button>
 
-      <div id="ar-prompt">
-        <img src="/ar_hand_prompt.png" alt="AR prompt hand" />
-      </div>
     </model-viewer>
   );
 };
