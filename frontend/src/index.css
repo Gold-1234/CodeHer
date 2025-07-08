@@ -50,7 +50,14 @@
   --color-primary: #EB7896;
   --color-secondary-content: #aeb8c7;
   --color-secondary: #8676E5;
-  --base-content: #8676E5
+  --base-content: #8676E5;
+  
+}
+
+html, body {
+  height: 100%;
+  margin: 0;
+  overflow: auto; /* Prevent double scrollbar */
 }
 
 /* [data-theme="cmyk"] {

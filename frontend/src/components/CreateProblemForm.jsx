@@ -677,7 +677,7 @@ const CreateProblemForm = () => {
           )} 
           onChange={(e) => handleChange(e)}
         >
-        <div className="flex flex-row items-center justify-between ">
+        <div className="flex flex-row items-center justify-between text-white">
           <h1 className="text-2xl font-bold text-primary m-7">Add Problem</h1>
           <div className="flex flex-row md:flex-row gap-3 mt-4 md:mt-0">
             <button type="submit" className="btn btn-primary text-white">

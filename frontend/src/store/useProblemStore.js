@@ -3,7 +3,6 @@ import { axiosInstance } from "@/lib/axios";
 import toast from "react-hot-toast";
 import {useNavigate} from "react-router-dom";
 
-
 const useProblemStore = create (( set ) => ({
 	problems : [],
 	problem : null,
@@ -23,7 +22,6 @@ const useProblemStore = create (( set ) => ({
       const res = await axiosInstance.post('/problem/create', value)
 
       if(res) toast.success(res.data.message || "Problem created successfully.")
-      console.log(res.data);
       set({ isSubmitted : true })
       setTimeout(() => {
         navigation("/")
@@ -37,14 +35,12 @@ const useProblemStore = create (( set ) => ({
     }
     },
 
-	getAllProblem : async () => {
+	getAllProblems : async () => {
 		try {
 			set({ isProblemsLoading : true })
-			const res = axiosInstance.get('/problem/getAllProblems')
-			console.log(res);
+			const res = await axiosInstance.get('/problem/get')
 			
-			set({ problems : res.data.problems })  
-			toast.success( res.message )
+			set({ problems : res.data.data })  
 		} catch (error) {
 			console.log("error getting all problems", error);
 			toast.error( error.message )
@@ -53,13 +49,13 @@ const useProblemStore = create (( set ) => ({
 		}
 	},
 
-	getProblemById : async () => {
+	getProblemById : async (id) => {
 		try {
 			set({ isProblemLoading : true })
 			const res = await axiosInstance.get(`/problem/id/${id}`)
-			console.log(res);
+			console.log(res.data.data);
 			
-			set({ problem : res.data.problem  })
+			set({ problem : res.data.data  })
 			toast.success( res.message )
 		} catch (error) {
 			console.log("Error getting problem", error);

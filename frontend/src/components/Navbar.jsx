@@ -23,9 +23,10 @@ const Navbar = () => {
           <div className="ml-8 flex items-stretch gap-10">
           
             <button 
-              className={`btn text-lg rounded-4xl hover:border-secondary ${ activeSection === "Problems" ? "btn-active" : "btn-ghost"}`}
+              className={`btn text-lg rounded-4xl hover:border-secondary ${ activeSection === "Problems" ? "btn-active border-secondary" : "btn-ghost"}`}
               onClick={() => setActiveSection("Problems")}
-            >Problems
+            >
+              <Link to="/">Problems</Link>
             </button>
             <button className={`btn text-lg rounded-4xl hover:border-secondary ${ activeSection === "Sets" ? "btn-active" : "btn-ghost"}`}
               onClick={() => setActiveSection("Sets")}>

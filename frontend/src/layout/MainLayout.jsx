@@ -7,10 +7,12 @@ import Footer from '../components/Footer';
 
 const MainLayout = () => {
   return (
-	<div className='h-screen w-full overflow-x-hidden '>
+	<div className='w-full overflow-x-hidden relative min-h-screen flex-col'>
 		<FloatingBackground/>
 		<Navbar/>
-		<Outlet/>
+		<main className='flex-1'>
+			<Outlet />
+		</main>
 		<Footer/>
 	</div>
   )
