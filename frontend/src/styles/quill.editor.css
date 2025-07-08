@@ -1,0 +1,30 @@
+.ql-editor {
+  direction: ltr !important;
+  text-align: left !important;
+}
+
+/* Dark mode example */
+@media (prefers-color-scheme: dark) {
+  .ql-toolbar .ql-stroke {
+    stroke: white;
+  }
+
+  .ql-toolbar .ql-fill {
+    fill: white;
+  }
+
+  .ql-toolbar  .ql-picker-options {
+    background-color: #141C21;
+  }
+  .ql-toolbar .ql-picker-label {
+    color : white;
+  }
+
+  .ql-toolbar .ql-picker-item {
+    color : white;
+  }
+
+  .ql-editor.ql-blank::before {
+    color: #aaa; /* lighter gray for dark backgrounds */
+  }
+}

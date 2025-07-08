@@ -4,8 +4,13 @@ import { ApiError } from "../utils/api-error.js";
 import { ApiResponse } from "../utils/api-response.js";
 
 export const createProblem = async( req, res ) => {
+	console.log("create problem request");
+	
 	const { title, description, difficulty, tags, examples, constraints, testcases, codeSnippets, referenceSolutions, hints, editorial} = req.body;
 
+	if( !referenceSolutions ){
+		throw new ApiError(400, "Reference solutions required")
+	}
 	const user = req.user;
 
 	if(user.role !== "ADMIN"){

@@ -16,7 +16,10 @@ const signupSchema = z.object({
 	password: z
 				.string()
 				.min(6, "Password must be atleast 6 characters ")
-				.regex(passValidation, "Password must contain an Uppercase, lowercase letter, a number and a special character."),
+				.regex(/(?=.*?[A-Z])/, "Password must contain atleast one Uppercase character.")
+				.regex(/(?=.*?[a-z])/, "Password must contain atleast one lowercase character")
+				.regex(/(?=.*?[0-9])/, "Password must contain atleast one number")
+				.regex(/(?=.*?[!@#$%^&*_-])/, "Password must contain atleast one special character"),
 	name: z.string().min(3, "Name must be at least 3 charcters.")
 })
 
@@ -68,7 +71,7 @@ const SignupPage = () => {
 					<div className='flex flex-col w-full '>
 						<div className='relative w-full'>
 						<Code className="h-5 w-5 text-base-content/40 -translate-y-1/2 top-1/2 left-3 absolute z-10 pointer-events-none" />
-						<input type='text' placeholder='Name' {...register("name")} className='input input-secondary pl-10'/>
+						<input type='text' placeholder='Name' {...register("name")} className='input input-primary pl-10'/>
 						</div>
 						{errors.name && <div className='text-red-700'>{errors.name.message}</div>}
 					</div>
@@ -80,7 +83,7 @@ const SignupPage = () => {
 								type='email' 
 								placeholder='Email' 
 								{...register("email")} 
-								className='input input-secondary pl-10'
+								className='input input-primary pl-10'
 							/>
 						</div>
 						{errors.email && <div className='text-red-700'>{errors.email.message}</div>}
@@ -91,7 +94,7 @@ const SignupPage = () => {
 							<Lock className="h-5 w-5 text-base-content/40 -translate-y-1/2 top-1/2 left-3 absolute z-10 pointer-events-none" />
 							<input type={
 							showPassword ? "text" : "password"
-							} placeholder='Password' {...register("password")} className='input input-secondary z-0 pl-10'/>
+							} placeholder='Password' {...register("password")} className='input input-primary z-0 pl-10'/>
 							<button type='button' className='absolute right-2 top-1/2 -translate-y-1/2 p-2 z-10'
 							onClick={() => {setShowPassword(!showPassword)}}>
 								{showPassword ? 
@@ -104,7 +107,7 @@ const SignupPage = () => {
 
 					
 
-					<button type='submit' className='btn btn-secondary w-80' disabled={isSigningUp} >
+					<button type='submit' className='btn btn-primary w-80' disabled={isSigningUp} >
 						{ isSigningUp ? 
 							<span className="loading loading-dots loading-lg bg-white" style={{ backgroundColor: '#5654df' }}></span> : "Sign up"}
 					</button>
@@ -122,7 +125,7 @@ const SignupPage = () => {
 					
 					{errors.root && <div className='text-red-500'>{errors.root.message}</div>}
 				</div>
-				<span>Already have an account? <Link to="/login" className='link link-secondary link-hover'>Log In</Link> </span>
+				<span>Already have an account? <Link to="/login" className='link link-primary link-hover'>Log In</Link> </span>
 			</form>
 	</>
   )

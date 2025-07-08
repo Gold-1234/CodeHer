@@ -36,7 +36,7 @@ const LoginPage = () => {
 			}
       console.log(data);
 			const response = await logIn(data);
-			console.log(authUser);
+			console.log(response);
       
 			
     } catch (error) {
@@ -64,7 +64,7 @@ const LoginPage = () => {
                 type='email' 
                 placeholder='Email' 
                 {...register("email")} 
-                className='input input-secondary pl-10'
+                className='input input-primary pl-10'
                 autoComplete='current-email'
               />
             </div>
@@ -76,7 +76,7 @@ const LoginPage = () => {
               <Lock className="h-5 w-5 text-base-content/40 -translate-y-1/2 top-1/2 left-3 absolute z-10 pointer-events-none" />
               <input type={
               showPassword ? "text" : "password"
-              } placeholder='Password' {...register("password")} className='input input-secondary z-0 pl-10' autoComplete='current-password'/>
+              } placeholder='Password' {...register("password")} className='input input-primary z-0 pl-10' autoComplete='current-password'/>
               <button type='button' className='absolute right-2 top-1/2 -translate-y-1/2 p-2 z-10'
               onClick={() => {setShowPassword(!showPassword)}}>
                 {showPassword ? 
@@ -89,7 +89,7 @@ const LoginPage = () => {
 
           {errors.root && <div className='text-red-500'>{errors.root.message}</div>}
 
-          <button type='submit' className='btn btn-secondary w-80' disabled={isLoggingIn} >
+          <button type='submit' className='btn btn-primary w-80' disabled={isLoggingIn} >
             { isLoggingIn ? 
               <span className="loading loading-dots loading-lg" style={{backgroundColor:"#DB7093"}} ></span> : "Log In"}
           </button>
@@ -106,7 +106,7 @@ const LoginPage = () => {
           </div>
           
         </div>
-        <span>Don't have an account? <Link to="/signup" className='link link-secondary link-hover'>Sign Up</Link> </span>
+        <span>Don't have an account? <Link to="/signup" className='link link-primary link-hover'>Sign Up</Link> </span>
       </form>
   </>
   )

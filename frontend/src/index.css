@@ -1,8 +1,9 @@
 @import "tailwindcss";
+
+
 @plugin "daisyui"{
   themes: sunset --prefersdark, cmyk --default, dracula;
 }
-
 
 @keyframes float {
   0%, 100% {
@@ -41,7 +42,7 @@
 .montserrat-bold {
   font-family: "Montserrat", sans-serif;
   font-optical-sizing: auto;
-  font-weight: 600;
+  font-weight: 500;
   font-style: normal;
 }
 
@@ -49,9 +50,10 @@
   --color-primary: #EB7896;
   --color-secondary-content: #aeb8c7;
   --color-secondary: #8676E5;
-  
+  --base-content: #8676E5
 }
 
-/* body {
-  overflow:auto
-} */
+/* [data-theme="cmyk"] {
+  --base-content: #b62222 !important; /* Change to your desired text color, e.g., dark gray */
+/* } */ 
+

@@ -1,13 +1,17 @@
 import React from 'react'
-import { FloatingBackground } from '../components/floatingComponent';
-import Footer from '../components/Footer';
+import useProblemStore from '@/store/useProblemStore'
 
 export const HomePage = () => {
-  return (
-    <div className='min-h-screen flex flex-col items-center mt-14'>
-      
-     <div className='bg-red-500 h-400'>
 
+  const {} = useProblemStore()
+  
+  return (
+    <div className='h-screen flex items-center mt-5 text-white'>
+      <div className='h-full w-1/6 bg-pink-600'>
+        section
+      </div>
+     <div className='bg-red-500 h-full w-full'>
+    hello
      </div>
     </div>
     

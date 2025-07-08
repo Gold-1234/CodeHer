@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { User, Code, LogOut } from "lucide-react";
 import { Link } from "react-router-dom";
 import LogoutButton from "./LogoutButton";
@@ -8,10 +8,9 @@ import { useAuthStore } from "../store/useAuthStore";
 const Navbar = () => {
   
   const { authUser } = useAuthStore();
-
+  const [ activeSection, setActiveSection ] = useState('Problems')
   return (
     <>
-    {/* text-[#dc989b] */}
       <div className="navbar bg-base-100 w-screen">
         <div className="flex-1 flex-row flex items-center ">
           <Link className="flex flex-row items-center m-4"> 
@@ -23,11 +22,23 @@ const Navbar = () => {
 
           <div className="ml-8 flex items-stretch gap-10">
           
-            <button className="btn btn-ghost text-lg" >
-              <Link to="/problems">Problems</Link>
+            <button 
+              className={`btn text-lg rounded-4xl hover:border-secondary ${ activeSection === "Problems" ? "btn-active" : "btn-ghost"}`}
+              onClick={() => setActiveSection("Problems")}
+            >Problems
             </button>
-            <button className="btn btn-ghost text-lg"><Link to="/sets">Sets</Link></button>
-            <button className="btn btn-ghost text-lg"><Link to="/dashboard">Dashboard</Link></button>
+            <button className={`btn text-lg rounded-4xl hover:border-secondary ${ activeSection === "Sets" ? "btn-active" : "btn-ghost"}`}
+              onClick={() => setActiveSection("Sets")}>
+                <Link to="/sets">
+                Sets
+                </Link>
+              </button>
+            <button className={`btn text-lg rounded-4xl hover:border-secondary ${ activeSection === "Dashboard" ? "btn-active" : "btn-ghost"}`}
+              onClick={() => setActiveSection("Dashboard")}>
+                <Link to="/dashboard">
+                Dashboard
+                </Link>
+                </button>
             
         </div>
         </div>
@@ -64,7 +75,7 @@ const Navbar = () => {
               {
                 authUser?.role === "ADMIN" && (
                   <li>
-                    <Link to="/add-problem"
+                    <Link to="/home/add-problem"
                       className="">
                         Add Problem
                       </Link>

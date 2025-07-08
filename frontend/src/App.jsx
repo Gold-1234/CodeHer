@@ -9,8 +9,9 @@ import SignupPage from "./page/SignupPage";
 import { useAuthStore } from "./store/useAuthStore";
 import AuthLayout from "./layout/AuthLayout";
 import MainLayout from "./layout/MainLayout";
-import Navbar from "./components/Navbar";
-
+import AdminRoute from "./components/AdminRoute";
+import AddProblem from "./page/AddProblem";
+import { LandingPage } from "./page/LandingPage";
 function App() {
   const { authUser, checkAuth, isCheckingAuth } = useAuthStore();
 
@@ -63,13 +64,20 @@ function App() {
               authUser ? <HomePage /> : <Navigate to={"/login"} replace />
             }
           />
-        </Route>
 
-        <Route element={< AdminRoute />}>
+          <Route element={< AdminRoute />}>
             <Route 
-              path="/add-problem"
-              element={ authUser ? <AddProblem/> : <Navigate to='/'/>}/>
+              path="add-problem"
+              element={<AddProblem/>}/>
+          </Route>
+        
+          <Route 
+              path="landing"
+              element={<LandingPage/>}/>
         </Route>
+            
+        
+        
       </Routes>
     </div>
   );
