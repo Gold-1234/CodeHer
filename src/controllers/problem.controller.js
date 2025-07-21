@@ -86,13 +86,26 @@ export const createProblem = async( req, res ) => {
 
 export const getAllProblems = async( req, res ) => {
 	try {
-		const problems = await db.problem.findMany();
+		const { page = 1, limit = 10 } = req.query;
+		console.log(req.query);
+		
+		const skip = parseInt(parseInt( page ) - 1) * parseInt( limit )
+		
+		const problems = await db.problem.findMany({
+			skip: skip,
+			take: parseInt(limit)
+		});
+		const count = await db.problem.count()
+		const totalPages = Math.ceil(count/parseInt(limit))
+		console.log(totalPages);
+		
 		if(!problems) {
 			throw new ApiError(404, "No problems found.")
 		}
 		return res.status(200).json(
-			new ApiResponse("200", problems, "Problems found.")
+			new ApiResponse("200", { problems, count, totalPages, page }, "Problems found.")
 		)
+		
 	} catch (error) {
 		if(error instanceof ApiError){
 			return res.status(error.statusCode).json(

@@ -3,7 +3,7 @@ import { axiosInstance } from "@/lib/axios";
 import toast from "react-hot-toast";
 import {useNavigate} from "react-router-dom";
 
-const useProblemStore = create (( set ) => ({
+const useProblemStore = create (( set, get ) => ({
 	problems : [],
 	problem : null,
 	solvedProblems : [],
@@ -12,41 +12,50 @@ const useProblemStore = create (( set ) => ({
 	isSolvedProblemsLoading : false,
 	isCreatingProblem : false,
 	isSubmitted : false,
+	totalPages: 1,
+	submissions: [],
 
-
+	resetProblem: () => set({ problems : [], totalPages : 1 }),
+	
 	submitProblem : async ( value, navigation ) => {
-    console.log("submitting....");
-    try {
-      set({ isCreatingProblem : true })
-      
-      const res = await axiosInstance.post('/problem/create', value)
-
-      if(res) toast.success(res.data.message || "Problem created successfully.")
-      set({ isSubmitted : true })
-      setTimeout(() => {
-        navigation("/")
-      }, 2000);
-      
-    } catch (error) {
-      console.log(error);
-      toast.error("Error creating problem.")
-    } finally {
-      set({ isCreatingProblem : false })
-    }
-    },
-
-	getAllProblems : async () => {
+		console.log("submitting....");
 		try {
-			set({ isProblemsLoading : true })
-			const res = await axiosInstance.get('/problem/get')
-			
-			set({ problems : res.data.data })  
+		set({ isCreatingProblem : true })
+		
+		const res = await axiosInstance.post('/problem/create', value)
+
+		if(res) toast.success(res.data.message || "Problem created successfully.")
+		set({ isSubmitted : true })
+		setTimeout(() => {
+			navigation("/")
+		}, 2000);
+		
 		} catch (error) {
-			console.log("error getting all problems", error);
-			toast.error( error.message )
+		console.log(error);
+		toast.error("Error creating problem.")
 		} finally {
-			set({ isProblemsLoading : false })
+		set({ isCreatingProblem : false })
 		}
+		},
+
+	getAllProblems : async ( page, limit ) => {
+		try {
+			const res = await axiosInstance.get(`/problem/get?page=${page}&limit=${limit}`)
+			const { problems : newProblems, totalPages } = res.data.data
+			console.log(newProblems);
+			
+			const existingProblems = get().problems
+			console.log(existingProblems);
+			
+			set({ 
+				problems : newProblems,
+				totalPages : totalPages
+			})
+			console.log(get().problems);
+			
+		  } catch (error) {
+			console.log(error);
+		  }
 	},
 
 	getProblemById : async (id) => {
@@ -55,8 +64,7 @@ const useProblemStore = create (( set ) => ({
 			const res = await axiosInstance.get(`/problem/id/${id}`)
 			console.log(res.data.data);
 			
-			set({ problem : res.data.data  })
-			toast.success( res.message )
+			set({ problem : res.data.data })
 		} catch (error) {
 			console.log("Error getting problem", error);
 			toast.error( error.message )
@@ -79,7 +87,6 @@ const useProblemStore = create (( set ) => ({
 			set({ isSolvedProblemsLoading : false })
 		}
 	},
-
 
 }))
 

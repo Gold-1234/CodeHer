@@ -1,6 +1,5 @@
 @import "tailwindcss";
 
-
 @plugin "daisyui"{
   themes: sunset --prefersdark, cmyk --default, dracula;
 }
@@ -51,16 +50,19 @@
   --color-secondary-content: #aeb8c7;
   --color-secondary: #8676E5;
   --base-content: #8676E5;
+  --color-easy: #3cb94e;
+  --color-medium: #dd9324;
+  --color-hard: #c45353;
   
 }
 
 html, body {
   height: 100%;
   margin: 0;
+  padding: 0;
   overflow: auto; /* Prevent double scrollbar */
 }
 
-/* [data-theme="cmyk"] {
-  --base-content: #b62222 !important; /* Change to your desired text color, e.g., dark gray */
-/* } */ 
+
+
 

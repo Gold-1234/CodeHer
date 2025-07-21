@@ -665,7 +665,7 @@ const CreateProblemForm = () => {
   }
 
   return (
-    <div>
+    <div className="w-full flex flex-1">
       <form onSubmit={handleSubmit(
             (data) => {
               console.log("Form submitted successfully with data:", data);
@@ -675,9 +675,9 @@ const CreateProblemForm = () => {
               console.error("Validation errors:", errors);
             }
           )} 
-          onChange={(e) => handleChange(e)}
+          className="w-full"
         >
-        <div className="flex flex-row items-center justify-between text-white">
+        <div className="flex w-full flex-row items-center justify-between text-white">
           <h1 className="text-2xl font-bold text-primary m-7">Add Problem</h1>
           <div className="flex flex-row md:flex-row gap-3 mt-4 md:mt-0">
             <button type="submit" className="btn btn-primary text-white">
@@ -906,8 +906,8 @@ const CreateProblemForm = () => {
             <div className="overflow-none rounded-lg">
             <div className="m-5 flex">
               {
-              languages.map((field) => (
-                <div key={field.id} className="flex">
+              languages.map(( field ) => (
+                <div key={ field } className="flex">
                 <button 
                   type="button" 
                   className={`btn ${language === field ? 'btn-active' : 'btn-ghost'}`} 
@@ -935,10 +935,10 @@ const CreateProblemForm = () => {
                       />
                     )}
                     />
-                    {errors.codeSnippets?.[lang.toUpperCase()] && (
+                    {errors.codeSnippets?.[lang] && (
                     <label className="label">
                       <span className="label-text-alt text-error">
-                        {errors.codeSnippets[lang.toUpperCase()].message}
+                        {errors.codeSnippets[lang].message}
                       </span>
                     </label>
                   )}
@@ -980,10 +980,10 @@ const CreateProblemForm = () => {
                       )}
                       />
                       {/* <DevTool control={control} /> */}
-                      {errors.referenceSolutions?.[lang.toUpperCase()] && (
+                      {errors.referenceSolutions?.[lang] && (
                       <label className="label">
                         <span className="label-text-alt text-error bg-red-400">
-                          {errors.referenceSolutions?.[lang.toUpperCase()].message}
+                          {errors.referenceSolutions?.[lang].message}
                         </span>
                       </label>
                     )}

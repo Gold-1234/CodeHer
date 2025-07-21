@@ -6,7 +6,7 @@ import { Status } from "../generated/prisma/index.js";
 
 export const executeCode = async (req, res) => {
 	try {
-		const { source_code, stdin, expected_outputs, language_id, problemId} = req.body;
+		const { source_code, stdin, expected_outputs, language_id, problemId } = req.body;
 
 		const userId = req.user.id;
 		console.log(userId);

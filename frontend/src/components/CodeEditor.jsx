@@ -1,27 +1,33 @@
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 import Editor from "@monaco-editor/react";
 
+const CodeEditor = ({ value, onChange, language, width : parent, readOnly }) => {
 
-const CodeEditor = ({ value, onChange, language }) => {
+	const [ theme, setTheme ] = useState("vs-dark")
 
-	const [ theme, setTheme ] = useState( () => {
-		return window.matchMedia('(prefers-color-scheme: dark)').matches ? "hc-black" : "vs-dark"
-	})
-
-  return (
-	<Editor
-		height={'400px'}
-		value={value}
-		onChange={onChange}
-		language={language}
-		options={ { minimap: { enabled: false },
-                                  fontSize: 14,
-                                  lineNumbers: "on",
-                                  roundedSelection: false,
-                                  scrollBeyondLastLine: false,
-                                  automaticLayout: true}}
-		theme={theme}
-	/>
+	return (
+		<div className='h-full w-full text-black'>
+			{/* <Editor
+				value={value}/> */}
+			<Editor
+				width='100%'
+				height='100%'
+				value={value}
+				onChange={onChange}
+				language={language}
+				theme={theme}
+				defaultLanguage='javascript'
+				className='absolute inset-0'
+				options={ { minimap: { enabled: true },
+										readOnly: readOnly,
+										fontSize: 16,
+										lineNumbers: "on",
+										roundedSelection: false,
+										scrollBeyondLastLine: false,
+										automaticLayout: true }}
+			/>
+		</div>
+		
   )
 }
 

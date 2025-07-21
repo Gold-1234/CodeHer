@@ -12,6 +12,7 @@ import MainLayout from "./layout/MainLayout";
 import AdminRoute from "./components/AdminRoute";
 import AddProblem from "./page/AddProblem";
 import { LandingPage } from "./page/LandingPage";
+import { ProblemPage } from "./page/ProblemPage";
 function App() {
   const { authUser, checkAuth, isCheckingAuth } = useAuthStore();
 
@@ -30,19 +31,18 @@ function App() {
   }
 
   return (
-    <div className="flex flex-col items-center justify-start dark:text-white">
+    <div className="flex flex-col items-center justify-start dark:text-white w-full h-screen overflow-auto">
       <Toaster />
       <Routes>
-        <Route
-          path="/"
+
+        <Route path="/"
           element={
             authUser ? (
               <Navigate to="/home" replace />
             ) : (
               <Navigate to="/login" replace />
             )
-          }
-        />
+          }/>
 
         <Route element={<AuthLayout />}>
           <Route
@@ -58,6 +58,7 @@ function App() {
         </Route>
 
         <Route path="/home" element={<MainLayout />}>
+
           <Route
             index
             element={
@@ -68,14 +69,20 @@ function App() {
           <Route element={< AdminRoute />}>
             <Route 
               path="add-problem"
-              element={<AddProblem/>}/>
+              element={<AddProblem/>}
+            />
           </Route>
         
           <Route 
               path="landing"
-              element={<LandingPage/>}/>
+              element={<LandingPage/>}
+          />
         </Route>
-            
+
+         <Route
+            path={`problem/id/:id`}
+            element={<ProblemPage/>}
+          />
         
         
       </Routes>

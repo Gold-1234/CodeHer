@@ -10,12 +10,11 @@ const Navbar = () => {
   const { authUser } = useAuthStore();
   const [ activeSection, setActiveSection ] = useState('Problems')
   return (
-    <>
-      <div className="navbar bg-base-100 w-screen">
+      <div className="navbar bg-base-100 w-full shadow backdrop-blur ">
         <div className="flex-1 flex-row flex items-center ">
           <Link className="flex flex-row items-center m-4"> 
           <img src="codeher.svg" alt="" className="h-8 w-8 " />
-          <p className="btn btn-ghost text-3xl pointer-events-none montserrat-bold text-white -ml-2">
+          <p className="btn btn-ghost text-3xl pointer-events-none montserrat-bold dark:text-white -ml-2">
           CodeHer
           </p> 
           </Link>
@@ -57,7 +56,7 @@ const Navbar = () => {
               <div className="w-10 rounded-full">
                 <img
                   alt="User Avatar"
-                  src={authUser?.image || "https://avatar.iran.liara.run/public/girl"}
+                  src={authUser?.image || "https://cdn.pixabay.com/photo/2023/02/18/11/00/icon-7797704_640.png"}
                   className="object-cover"
 
                 />
@@ -94,7 +93,6 @@ const Navbar = () => {
           </div>
         </div>
       </div>
-    </>
   );
 };
 
