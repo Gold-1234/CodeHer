@@ -16,11 +16,11 @@ export const TagSelector = ({ handleTags }) => {
 	
 	
 	return (
-		<div>
+		<div className='h-full'>
 			<div>
 				<span className='font-bold m-5 text-lg'>Select Tags</span>
 			</div>
-			<div className='h-200 overflow-auto'>
+			<div className='h-180 overflow-auto'>
 				{problemTags.map(( tag, index ) => (
 				<div className='mx-2 text-gray-500' key={index} >
 					<input 

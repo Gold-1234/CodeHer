@@ -1,20 +1,21 @@
 import React, { useEffect, useState, useMemo, useRef } from 'react'
 import useProblemStore from '@/store/useProblemStore'
-import { ListPlus, Loader, Loader2, Navigation } from 'lucide-react'
-import { useNavigate } from 'react-router-dom'
+import { ListPlus, Loader, Loader2, Navigation, ListCheck } from 'lucide-react'
+import { Link, useNavigate } from 'react-router-dom'
 import { TagSelector } from '@/components/TagSelector'
 import { ProblemList } from '@/components/ProblemList'
 import { problemTags } from '@/assets/tagList'
+import { useHomePageStore } from '@/store/usehomePageStore'
+import { CreateList } from '@/components/CreateList'
 
 
-export const HomePage = () => {
+export const HomePage = ( user ) => {
 
-  const { isProblemsLoading } = useProblemStore()
-  const [ isSolved, setIsSolved ] = useState([])
   const [ searchText, setSearchText ] = useState("")
   const [ difficulty, setDifficulty ] = useState("")
   const [ selectedTags, setSelectedTags ] = useState([])
-
+  const { toggleFloating, isCreatingList, list, createList, pushList, togglePush, getList, lists} = useHomePageStore()
+  const [existing_lists, setLists] = useState([]);
   const changeDifficulty = (e) => {
     setDifficulty(e)
   }
@@ -22,6 +23,17 @@ export const HomePage = () => {
   const searchProblem = (e) => {
     setSearchText(e)
   }
+
+  useEffect(() => {
+    if(isCreatingList){
+      const fetch_lists = async () => {
+        const lists = await getList()
+        console.log("home page list:", lists);
+        setLists(lists)
+      }
+      fetch_lists()
+    }
+  }, [isCreatingList])
 
   const handleTags = ( e ) => {    
       const checked = e.target.checked
@@ -34,15 +46,15 @@ export const HomePage = () => {
   }
 
   return (
-    <div className='flex text-black dark:text-white w-full '>
+    <div className='flex text-black dark:text-white w-full items-center justify-center h-full'>
       {
-        isProblemsLoading ? <Loader/> : 
+       
       <div className='grid grid-cols-[auto_1fr] w-full h-full'>
         
           <div className='h-full w-fit'>
-            <TagSelector handleTags={ handleTags }/>
+             <TagSelector handleTags={ handleTags }/>
           </div>
-          <div className='text-secondary-content w-full flex flex-col '>
+           <div className='text-secondary-content w-full flex flex-col '>
             <div className='w-full flex justify-between items-center'>
               <div className='flex w-fit p-2 gap-4'>
                 <input 
@@ -63,20 +75,30 @@ export const HomePage = () => {
                 <option value="HARD">HARD</option>
               </select>
               </div>
-              
-
-            
-          <button className='btn btn-primary text-white mr-5 text-md'>
-            <ListPlus />
-            Create List
-          </button>
+              <div className='flex gap-5'>
+                  {isCreatingList &&  <button className='bg-red-500 text-white rounded-full btn'>
+                  <div className='flex' onClick={() => togglePush()}><ListCheck /></div> 
+                  </button>}
+                  <button
+                    className={`btn text-white mr-5 text-md flex ${
+                      isCreatingList ? "disabled" : "btn-primary"
+                    }`}
+                    onClick={toggleFloating}
+                  >
+                  <div className='flex gap-2 text-md items-center'><ListPlus />Add to list</div>
+                  </button>
+                </div>
             </div>
+            {pushList && (
+            <CreateList existingLists={existing_lists}/>
+          )}
+
             <div id='scrollDiv' className='w-full h-full'>
               {
-               <ProblemList filters={{ selectedTags, difficulty, searchText }} />
+               <ProblemList filters={{ selectedTags, difficulty, searchText }} user={user}/>
               }
-            </div>
-          </div>
+            </div> 
+           </div> 
       </div>
       }
     </div>

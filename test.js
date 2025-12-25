@@ -10,13 +10,13 @@ async function test() {
         sourceCode: "test",
         language: "JAVASCRIPT",
         status: "Accepted",
-		stdin: "test",
-		stderr: "error",
-		stdout: "output",
-		compileOutput : "compile output",
-		status : "status",
-		memory: "memory",
-		time : "time"
+        stdin: "test",
+        stderr: "error",
+        stdout: "output",
+        compileOutput : "compile output",
+        status : "status",
+        memory: "memory",
+        time : "time"
       }
     });
     console.log(submission);

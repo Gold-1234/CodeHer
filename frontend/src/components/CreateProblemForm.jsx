@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import { useForm, useFieldArray, Controller } from "react-hook-form";
 import { z } from "zod";
 import {axiosInstance} from "../lib/axios"
-import {useNavigate} from "react-router-dom";
+import {useNavigate, useParams} from "react-router-dom";
 import { zodResolver } from "@hookform/resolvers/zod";
 import toast from "react-hot-toast";
 import { DevTool } from "@hookform/devtools";
@@ -18,11 +18,10 @@ import {
   Lightbulb,
   Check,
   Loader,
+  Save,
 } from "lucide-react";
 import {TextEditor} from "./TextEditor.jsx";
 import CodeEditor from "./CodeEditor";
-import axios from "axios";
-import { log } from "three/src/nodes/TSL";
 import useProblemStore from "@/store/useProblemStore";
 
 
@@ -512,27 +511,28 @@ public class Main {
   },
 };
 
-const CreateProblemForm = () => {
+const CreateProblemForm = ({ formData, mode }) => {
+  
   const [sampleType , setSampleType] = useState("DP")
   const [content, setContent] = useState("");
   const [ language, setLanguage ] = useState('javascript');
   const [ solutionLanguage, setSolutionLanguage ] = useState('javascript');
   const [ isLoading, setIsLoading ] = useState(false)
-
-  const { isSubmitted, submitProblem } = useProblemStore()
+  
+  const { submitProblem, updateProblem } = useProblemStore()
   const navigation = useNavigate()
 
   useEffect(() => setLanguage("javascript"), [])
   useEffect(() => setSolutionLanguage("javascript"), [])
   useEffect(() => setIsLoading(false), [])
 
-
+  const { id } = useParams()
   let defaultValues = {
-     hints: [""],
+      hints: [],
       description : "",
       testcases: [{ input: "", output: "" }],
-      tags: [""],
-      constraints :[""],
+      tags: [],
+      constraints :[],
       examples: 
         [{ input: "", output: "", explanation: "" }]
       ,
@@ -559,6 +559,7 @@ const CreateProblemForm = () => {
     watch,
     getValues,
     formState: { errors },
+    setError
   } = useForm({
     resolver: zodResolver(problemSchema),
     defaultValues 
@@ -566,6 +567,8 @@ const CreateProblemForm = () => {
 
   useEffect(() => {
     const subscription = watch((value) => {
+      console.log('hello', value);
+      
       localStorage.setItem("formData", JSON.stringify(value))
     })
     return () => subscription.unsubscribe()
@@ -634,7 +637,12 @@ const CreateProblemForm = () => {
     }
   };
 
-  
+  useEffect(() => {
+    reset( formData )
+    console.log(formData);
+    console.log("mode", mode);
+    
+  }, [ formData, reset ])
 
   const loadSampleData = () => {
     const sampleData = sampleType === "DP" ? sampledpData : sampleStringProblem
@@ -654,7 +662,11 @@ const CreateProblemForm = () => {
     try {
       setIsLoading(true)
       if(!value) throw new Error("Values required")
-      await submitProblem(value, navigation)
+        if( mode === 'add'){
+          await submitProblem(value, navigation)
+        } else {
+          await updateProblem( value, navigation, id )
+        }
       localStorage.removeItem("formData")
     } catch (error) {
       setError("root", { message: "Fill required fields."})
@@ -679,7 +691,17 @@ const CreateProblemForm = () => {
         >
         <div className="flex w-full flex-row items-center justify-between text-white">
           <h1 className="text-2xl font-bold text-primary m-7">Add Problem</h1>
-          <div className="flex flex-row md:flex-row gap-3 mt-4 md:mt-0">
+          {
+            mode === 'edit' ? 
+                <button
+                    type="submit"
+                    className="btn btn-primary dark:text-white mx-10"
+                  >
+                    <Save />
+                    Save Changes
+                  </button>
+                   : 
+            <div className="flex flex-row md:flex-row gap-3 mt-4 md:mt-0">
             <button type="submit" className="btn btn-primary text-white">
               {
                 isLoading ? <span className="loading loading-spinner text-white"></span> : "Submit"
@@ -714,6 +736,8 @@ const CreateProblemForm = () => {
                   Load Sample
                 </button>
           </div>
+          }
+          
         </div>
           
         <div className="flex flex-col items-center">
@@ -796,7 +820,7 @@ const CreateProblemForm = () => {
                       onClick={() => removeTag(index)}
                       disabled={tagFields.length === 1}
                     >
-                      <Trash2 className="h-5 text-primary m-2" />
+                      <Trash2 className="h-5 text-primary m-2 cursor-pointer" />
                     </button>
                   </div>
                 ))}
@@ -835,7 +859,7 @@ const CreateProblemForm = () => {
                       onClick={() => removeConstraint(index)}
                       disabled={constraintFields.length === 1}
                     >
-                      <Trash2 className="h-5 text-primary m-2" />
+                      <Trash2 className="h-5 text-primary m-2 cursor-pointer" />
                     </button>
                   </div>
                 ))}
@@ -922,7 +946,7 @@ const CreateProblemForm = () => {
             {
               languages.map(( lang ) => (
                 lang === language ? (
-                <div key={lang} className={`flex`}>
+                <div key={lang} className={`flex h-150`}>
                   
                 <Controller
                     name={`codeSnippets.${language}`}
@@ -966,7 +990,7 @@ const CreateProblemForm = () => {
                 (languages.map((lang, index) => (
                 
                 lang === solutionLanguage ?
-                  (<div key={index} className="flex">
+                  (<div key={index} className="flex h-150">
                     
                    <Controller
                       name={`referenceSolutions.${solutionLanguage.toLowerCase()}`}

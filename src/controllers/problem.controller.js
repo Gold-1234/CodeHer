@@ -104,7 +104,7 @@ export const getAllProblems = async( req, res ) => {
 		}
 		return res.status(200).json(
 			new ApiResponse("200", { problems, count, totalPages, page }, "Problems found.")
-		)
+			)
 		
 	} catch (error) {
 		if(error instanceof ApiError){

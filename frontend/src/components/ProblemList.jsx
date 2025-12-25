@@ -1,81 +1,47 @@
+import { useAuthStore } from '@/store/useAuthStore';
+import { useHomePageStore } from '@/store/usehomePageStore';
 import useProblemStore from '@/store/useProblemStore';
-import { Check, Loader2 } from 'lucide-react'
+import { useSubimissionStore } from '@/store/useSubmissionStore';
+import { Check, Loader2, Pen, Trash } from 'lucide-react'
 import React, { useState, useRef, useEffect, useMemo } from 'react'
-import { useNavigate } from 'react-router-dom';
+import { Navigate, useNavigate } from 'react-router-dom';
+import { CreateList } from './CreateList';
 
-export const ProblemList = ( { filters } ) => {
+export const ProblemList = ( { filters, user } ) => {
   const { selectedTags = [], difficulty = "", searchText = "" } = filters;
-  const { getAllProblems, totalPages, problems, resetProblem } = useProblemStore()
+  const { getAllProblems, totalPages, problems, resetProblem, deleteProblem, deletingProblem, isProblemsLoading, getProblemById } = useProblemStore()
+  const { isSubmitted, getSubmissions } = useSubimissionStore()
   const [ page, setPage ] = useState(1)
-  const [ loading, setLoading ] = useState(false)
-  const [ allProblems, setAllProblems ] = useState([])
-
-	const navigation = useNavigate()
-
-	const handleClick = (problem) => {
-		navigation(`/problem/id/${problem.id}`)
-  }
-  const limit = 12;
+  const [ admin, setAdmin ] = useState(false)
+  const { isCreatingList, list, addToList, removeFromList } = useHomePageStore()
+  
+  const navigation = useNavigate()
 
   useEffect(() => {
-    resetProblem()
-    getAllProblems( page, limit )
+    getSubmissions()
+  }, [])
+
+  const add = (e, problem) => {
+    e.stopPropagation()
+    console.log(e)
+    console.log(problem);
+    
+  }
+
+  useEffect(() => {
+    const fetch = async () => {
+      // setLoading(true)
+      const limit = 12;
+      await getAllProblems(page, limit)
+      // setLoading(false)
+    }
+    fetch()
   }, [ page ])
 
   useEffect(() => {
-    const newProblems = problems.filter(( newP ) => !allProblems.some(( problem ) => problem.id === newP.id ))
-    setAllProblems([ ...allProblems, ...newProblems ])
-  }, [ problems ])
-  
-  useEffect(() => {
-    console.log(allProblems);
-  }, [ allProblems ])
-  
-
-  const filteredProblems = useMemo(() => {
-      return allProblems
-              .filter(( problem ) => selectedTags.length === 0 || selectedTags.some(( tag ) => problem.tags.includes( tag )))
-              .filter((problem) => difficulty === "" || problem.difficulty === difficulty)
-              .filter(( problem ) => (searchText === "" || problem.title.toLowerCase().includes( searchText ))) 
-    }, [ allProblems, selectedTags, difficulty, searchText ])
-
-
-  const scrollRef = useRef( null );
-  
-
-  // const paginatedProblems = useMemo(() => {
-  //   return filteredProblems.slice( 0, page * limit )
-  // }, [ page, filteredProblems ])
-  // useEffect(() => {
-  //   console.log(paginatedProblems);
-    
-  // }, [ filteredProblems ])
-
-  // useEffect(() => {
-  //   const el = scrollRef.current    
-  //   if( !el || !totalPages ) return;    
-  //   const handleScroll = () => {
-  //     if( el.scrollTop + el.clientHeight + 100 >= el.scrollHeight && !loading )
-  //       {
-  //         console.log('setting loading. to true');
-  //         setLoading( true )
-  //     }
-  //   }
-
-  //   const debounce = ( fn, delay ) => {
-  //     let timeoutId;
-  //     return function(...args){
-  //       if( timeoutId ) clearTimeout(timeoutId)
-  //       timeoutId = setTimeout(() => {
-  //         fn(...args)
-  //       }, delay);
-  //     }
-  //   }
-  //   const debounceHandler = debounce( handleScroll, 500 )
-  //   el.addEventListener( "scroll", debounceHandler )
-  //   return () => el.removeEventListener("scroll", debounceHandler )
-
-  // }, [ page, problems ]);
+    if( user?.user?.role === 'ADMIN')
+      setAdmin(true)
+  }, [])
 
   useEffect(() => {
     const el = scrollRef.current  
@@ -85,64 +51,130 @@ export const ProblemList = ( { filters } ) => {
 
     const handleScroll = () => {
       console.log('scrolling')
-      if( el.scrollTop + el.clientHeight + 300 >= el.scrollHeight && !loading )
+      if( el.scrollTop + el.clientHeight + 300 >= el.scrollHeight && !isProblemsLoading )
         {
           console.log('setting loading to true');
-          setLoading( true )
+          if( page < totalPages)
+            setPage((prev) => prev + 1);
+
       }
     }
-    el.addEventListener( 'scroll', handleScroll )
-    return () => el.removeEventListener('scroll', handleScroll )
-  }, [ totalPages ])
+      const debounceHandler = debounce( handleScroll, 500 )
+    el.addEventListener( "scroll", debounceHandler )
+    return () => el.removeEventListener("scroll", debounceHandler )
+  }, [ isProblemsLoading, page, totalPages ])
 
-  useEffect(() => {
-    if (loading && page < totalPages) {
-      console.log('updating page');
-      setPage((prev) => prev + 1);
-    } else {
-      console.log('loading false');
-      setLoading(false);
+  const handleDelete = ( e, id, index ) => {
+    deleteProblem( id, index )
+  }
+
+  const handleEdit = ( e, id ) => {
+    navigation(`/problem/edit/${id}`)
+  }
+
+  const checkStatus = ( id ) => {    
+    const val =  isSubmitted?.find(( submission ) => (submission.problemId) === id && submission.status === 'Accepted')
+    return val
+  }
+	
+
+	const handleClick = (problem) => {
+		navigation(`/problem/id/${problem.id}`)
+  }
+ 
+  const filteredProblems = useMemo(() => {
+      return problems
+              .filter(( problem ) => selectedTags.length === 0 || selectedTags.some(( tag ) => problem.tags.includes( tag )))
+              .filter((problem) => difficulty === "" || problem.difficulty === difficulty)
+              .filter(( problem ) => (searchText === "" || problem.title.toLowerCase().includes( searchText ))) 
+    }, [ problems, selectedTags, difficulty, searchText ])
+
+
+  const scrollRef = useRef( null );
+  
+    const debounce = ( fn, delay ) => {
+      let timeoutId;
+      return function(...args){
+        if( timeoutId ) clearTimeout(timeoutId)
+        timeoutId = setTimeout(() => {
+          fn(...args)
+        }, delay);
+      }
     }
-  }, [loading, page, totalPages]);
-
+  
 
   return (
-	<div ref={scrollRef} className='w-full h-180 overflow-auto' id='scroll'>
-		{
-         filteredProblems.map(( problem, index ) => (
-          <div 
-            key={problem.id} 
-            className='grid grid-cols-[1fr_auto_1fr] p-2 my-5 text-md font-medium text-black dark:text-white items-center pl-6 rounded-lg justify-between bg-base-200 cursor-pointer ml-5'
-            onClick={() => handleClick(problem)}  
-          >
-            <div className='flex flex-1'>
-            <Check/>
-            <div className='mx-5 flex-1'> 
-              { index }. { problem.title}
-            </div>
-            </div>
+	<div ref={scrollRef} className="w-full h-[45rem] overflow-y-auto px-4 py-2">
+    {/* {isCreatingList && (
+    <div className="fixed inset-0 flex items-center justify-center bg-black/40 z-50">
+      <div className="bg-white p-6 rounded-xl shadow-xl">
+        <CreateList/>
+      </div>
+    </div>
+    )} */}
+  {
+    filteredProblems.map((problem, index) => (
 
-            <div className={`w-60 text-right font-light
-             ${problem.difficulty === "EASY" ? "text-green-400" : problem.difficulty === "MEDIUM" ? "text-orange-400" : "text-red-400"}
-              `}>
-              {problem.difficulty.toLowerCase()}
+      <div
+        key={problem.id}
+        className="grid grid-cols-[1.5fr_0.8fr_1fr_auto] gap-6 p-4 mb-3 text-sm text-black dark:text-white items-center rounded-xl bg-base-200 cursor-pointer transition hover:bg-base-300"
+        onClick={() => handleClick(problem)}
+      >
+        
+        <div className="flex items-center gap-3 min-w-0" onClick={(e) => e.stopPropagation()}>
+          {checkStatus(problem.id) && <Check className="text-green-500 h-5 w-5 shrink-0"/> }
+            {
+                isCreatingList && <input type="checkbox" checked = {list.some((p => p.id === problem.id))} onChange={(e) => {
+                  e.stopPropagation()
+                  if(e.target.checked){
+                    addToList(problem)
+                  } else {
+                    removeFromList(problem)
+                  }
+                  console.group(list)
+                }}/>
+              }
+          <span className="truncate font-medium text-base">{index + 1}. {problem.title}</span>
+        </div>
+
+        {/* Difficulty */}
+        <div className={`capitalize text-right text-sm font-semibold mx-10 ${problem.difficulty === "EASY" ? "text-green-400" : problem.difficulty === "MEDIUM" ? "text-orange-400" : "text-red-400"}`}>
+          {problem.difficulty.toLowerCase()}
+        </div>
+
+        {/* Tags */}
+        <div className="flex gap-2 flex-wrap justify-start items-center">
+          {problem.tags.slice(0, 2).map((tag, i) => (
+            <div key={i} className="bg-secondary text-white text-xs px-3 py-1 rounded-full min-w-max">
+              {tag}
             </div>
-            <div className='flex flex-row mx-10 justify-end text-white'>
-              
-                <div className='mx-2 bg-secondary rounded-4xl p-2 min-w-20 flex items-center justify-center text-sm'>{problem.tags[0]}</div>
-                <div className='mx-2 bg-secondary rounded-4xl p-2 min-w-20 flex items-center justify-center text-sm'>{problem.tags[1]}</div>              
-            </div>
+          ))}
+        </div>
+
+        {/* Admin actions */}
+        {admin && (
+          <div className="flex items-center gap-3 justify-end">
+            <button onClick={(e) => { e.stopPropagation(); handleDelete( e, problem.id, index ) }}>
+              {deletingProblem[ index ] ? <Loader2 className='animate-spin h-5 w-5'/> : <Trash className="h-5 w-5 text-red-500 hover:text-red-600" />}
+            </button>
+            <button onClick={(e) => { e.stopPropagation() ;handleEdit( e, problem.id ) }}>
+              <Pen className="h-5 w-5 text-gray-500 hover:text-blue-600" />
+            </button>
           </div>
-        ))
-    }
-    {
-       loading &&   
-       <div 
-          className='flex items-center justify-center p-2 my-5 text-md font-medium text-black dark:text-white pl-6 rounded-lg cursor-pointer'>
-            <Loader2 className='animate-spin'/>
-      </div> 
-    }
-     
-	</div>
+        )}
+        
+      </div>
+      
+    ))
+    
+  }
+
+  {/* Loader */}
+  {isProblemsLoading && page > 1 && (
+  <div className="flex items-center justify-center p-4">
+    <Loader2 className="animate-spin h-6 w-6 text-gray-500" />
+  </div>
+)}
+</div>
   )
 }

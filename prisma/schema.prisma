@@ -94,6 +94,7 @@ model Submission {
 model TestcasesResult {
   id           String  @id @default(uuid())
   submissionId String
+  passed       Boolean?
   testCase     Int
   stdout       String?
   expected     String

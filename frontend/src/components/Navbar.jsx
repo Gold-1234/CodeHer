@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { User, Code, LogOut } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import LogoutButton from "./LogoutButton";
 import { useAuthStore } from "../store/useAuthStore";
 
@@ -9,10 +9,11 @@ const Navbar = () => {
   
   const { authUser } = useAuthStore();
   const [ activeSection, setActiveSection ] = useState('Problems')
+
   return (
       <div className="navbar bg-base-100 w-full shadow backdrop-blur ">
         <div className="flex-1 flex-row flex items-center ">
-          <Link className="flex flex-row items-center m-4"> 
+          <Link className="flex flex-row items-center m-4" to={'/home'}> 
           <img src="codeher.svg" alt="" className="h-8 w-8 " />
           <p className="btn btn-ghost text-3xl pointer-events-none montserrat-bold dark:text-white -ml-2">
           CodeHer
@@ -29,7 +30,7 @@ const Navbar = () => {
             </button>
             <button className={`btn text-lg rounded-4xl hover:border-secondary ${ activeSection === "Sets" ? "btn-active" : "btn-ghost"}`}
               onClick={() => setActiveSection("Sets")}>
-                <Link to="/sets">
+                <Link to="/home/sets">
                 Sets
                 </Link>
               </button>

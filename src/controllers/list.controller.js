@@ -121,8 +121,10 @@ export const updateList = async ( req, res ) => {
 
 export const addProblemToList = async ( req, res ) => {
 
-	const { problemIds } = req.body;
-	const { listId } = req.params;
+	const { problems } = req.body;
+	const listId  = req.params.id;
+	
+	const problemIds = problems.map((p) => p.id);
 	
 	try {
 		const addedProblems = [];

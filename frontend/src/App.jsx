@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
 import { Loader } from "lucide-react";
@@ -13,11 +13,11 @@ import AdminRoute from "./components/AdminRoute";
 import AddProblem from "./page/AddProblem";
 import { LandingPage } from "./page/LandingPage";
 import { ProblemPage } from "./page/ProblemPage";
+import { SetsPage } from "./page/SetsPage";
+
 function App() {
   const { authUser, checkAuth, isCheckingAuth } = useAuthStore();
 
-    console.log( "authUser", authUser);
-    
   useEffect(() => {
     checkAuth();
   }, [checkAuth]);
@@ -34,16 +34,19 @@ function App() {
     <div className="flex flex-col items-center justify-start dark:text-white w-full h-screen overflow-auto">
       <Toaster />
       <Routes>
-
-        <Route path="/"
+        {/* Root redirect */}
+        <Route
+          path="/"
           element={
             authUser ? (
               <Navigate to="/home" replace />
             ) : (
               <Navigate to="/login" replace />
             )
-          }/>
+          }
+        />
 
+        {/* Auth routes */}
         <Route element={<AuthLayout />}>
           <Route
             path="/login"
@@ -56,35 +59,31 @@ function App() {
             }
           />
         </Route>
+        
 
+
+        {/* Protected routes */}
         <Route path="/home" element={<MainLayout />}>
-
           <Route
             index
             element={
-              authUser ? <HomePage /> : <Navigate to={"/login"} replace />
+              authUser ? (
+                <HomePage user={authUser} />
+              ) : (
+                <Navigate to={"/login"} replace />
+              )
             }
           />
-
-          <Route element={< AdminRoute />}>
-            <Route 
-              path="add-problem"
-              element={<AddProblem/>}
-            />
+          <Route path="sets" element={<SetsPage />} />
+          <Route element={<AdminRoute />}>
+            <Route path="add-problem" element={<AddProblem />} />
           </Route>
-        
-          <Route 
-              path="landing"
-              element={<LandingPage/>}
-          />
+          <Route path="landing" element={<LandingPage />} />
         </Route>
 
-         <Route
-            path={`problem/id/:id`}
-            element={<ProblemPage/>}
-          />
-        
-        
+        {/* Problem routes */}
+        <Route path="problem/id/:id" element={<ProblemPage />} />
+        <Route path="problem/edit/:id" element={<AddProblem />} />
       </Routes>
     </div>
   );

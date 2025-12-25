@@ -3,6 +3,7 @@ import { Editorial } from "@/components/Editorial";
 import { ProblemDescription } from "@/components/ProblemDescription";
 import { Solution } from "@/components/Solution";
 import { Submissions } from "@/components/Submissions";
+import { getJudge0languageId } from "@/lib/judge0";
 import { useExecutionStore } from "@/store/useExecutionStore";
 import useProblemStore from "@/store/useProblemStore";
 import { Editor } from "@monaco-editor/react";
@@ -14,6 +15,7 @@ import {
   Code2Icon,
   CopyCheck,
   History,
+  Loader,
   Play,
   Rotate3dIcon,
   RotateCcw,
@@ -24,7 +26,7 @@ import { useParams } from "react-router-dom";
 
 export const ProblemPage = () => {
   const { getProblemById, problem } = useProblemStore();
-  const { executeCode } = useExecutionStore()
+  const { testcaseOutput, submittingCode, submitCode, executionOutput, executingCode, executeCode } = useExecutionStore()
   const [isHandlerDragging, setHandlerDragging] = useState(false);
   const [isCodeDragging, setIsCodeDragging] = useState(false);
   const [editorWidth, setEditorWidth] = useState();
@@ -33,6 +35,7 @@ export const ProblemPage = () => {
   const [section, setSection] = useState("description");
   const [ language, setLanguage ] = useState('javascript')
   const [ sourceCode, setSourceCode ] = useState()
+  const [showResults, setShowResults] = useState(false);
 
   const handlerRef = useRef(null);
   const boxARef = useRef(null);
@@ -43,13 +46,19 @@ export const ProblemPage = () => {
   const boxRef = useRef(null);
   const { id } = useParams();
 
-  const runCode = ( ) => {
-    executeCode({source_code : sourceCode, language_id:language})
+  const submit = () => {
+    const stdin = problem?.testcases.map((testcase) => testcase.input)
+    const expected_outputs = problem?.testcases.map((testcase) => testcase.output)
+    submitCode({source_code : sourceCode, language_id:getJudge0languageId(language), stdin, expected_outputs, problemId: problem.id})
   }
 
-  const onChange = ( value ) => {
-    console.log(value);
-    
+  const run = () => {
+    const stdin = problem?.testcases.map((testcase) => testcase.input)
+    const expected_outputs = problem?.testcases.map((testcase) => testcase.output)
+    executeCode({source_code : sourceCode, language_id:getJudge0languageId(language), stdin, expected_outputs, problemId: problem.id})
+  }
+
+  const onChange = ( value ) => {    
     setSourceCode(value)
   }
 
@@ -88,7 +97,12 @@ export const ProblemPage = () => {
     return resizer(codeBlockHandlerRef, setIsCodeDragging);
   }, []);
 
+  useEffect(() => {
+    console.log(testcaseOutput);
+  }, [ testcaseOutput ])
+
   const select = (index) => {
+
     console.log(index);
     setIndex(index);
   };
@@ -143,17 +157,28 @@ export const ProblemPage = () => {
       "
       >
         <button 
-          onClick={() => runCode()}
+          onClick={run}
           className=" btn-secondary flex btn btn-sm text-white"
           >
-          <Play className="p-0.5" />
-          Run
+          {executingCode ? <Loader className="animate-spin"/> : <div className="flex flex-row items-center justify-center">
+            <Play className="p-0.5" />
+            Run
+          </div>}
+          
         </button>
-        <button className="btn-primary flex btn btn-sm text-white">
-          <CloudUpload className="p-0.5" />
-          Submit
+        <button 
+          onClick={submit}
+          className=" btn-primary flex btn btn-sm text-white"
+          >
+          {submittingCode ? <Loader className="animate-spin"/> : <div className="flex flex-row items-center justify-center">
+            <CloudUpload className="p-0.5" />
+            Submit
+          </div>}
+          
         </button>
+        
       </div>
+      
       <div
         className="flex w-full p-2 pt-0 flex-grow overflow-hidden"
         id="container"
@@ -216,8 +241,8 @@ export const ProblemPage = () => {
             {section === "solution" && problem && (
               <Solution problem={problem} />
             )}
-            {section === "submission" && problem && (
-              <Submissions problem={problem} />
+            {section === "submissions" && problem && (
+              <Submissions problem={problem} testcaseOutput={testcaseOutput} executionOutput={executionOutput}/>
             )}
           </div>
         </div>
@@ -256,8 +281,8 @@ export const ProblemPage = () => {
               </div>
             </div>
             <div className="h-full overflow-hidden rounded-b-2xl">
-              {problem?.codeSnippets.javascript && (
-                <CodeEditor value={problem.codeSnippets.javascript} onChange={onChange}/>
+              {problem?.codeSnippets && (
+                <CodeEditor value={problem.codeSnippets[language]} language={language} onChange={onChange}/>
               )}
             </div>
           </div>
@@ -267,31 +292,93 @@ export const ProblemPage = () => {
           ></div>
           <div
             ref={testcaseRef}
-            className="bg-base-100 w-full flex flex-col flex-1 flex-grow flex-shrink basis-auto rounded-2xl overflow-hidden"
+            className="bg-base-100 w-full flex flex-col flex-1 flex-grow flex-shrink basis-auto rounded-2xl overflow-auto h-1/2"
           >
             <div className="flex items-center text-md p-2 bg-base-300 rounded-t-2xl font-semibold dark:text-gray-400 h-10 gap-2 ">
               <CopyCheck className="text-primary ml-4" />
-              Testcases
+              <p onClick={() => setShowResults(false)}>Testcases</p>
+              
+              <div className="mx-5" onClick={() => setShowResults(true)}> Results</div>
+              
             </div>
-            <div className="h-fit w-fit flex gap-10 m-3">
-              {problem?.testcases.map((testcase, index) => (
-                <div>
-                  <button
-                    className="btn dark:bg-gray-700 @dark:text-white border-none font-medium"
-                    onClick={() => select(index)}
-                  >
-                    {" "}
-                    Testcase {index + 1}{" "}
-                  </button>
+            {!showResults ? (
+              <div>
+                  <div className="h-fit w-1/2 flex gap-10 m-3">
+                    {problem?.testcases.map((e, idx) => (
+                      <div key={idx}>
+                        <button
+                          type="btn"
+                          className="btn dark:bg-gray-700 @dark:text-white border-none font-medium"
+                          onClick={() => select(idx)}
+                        >
+                          {" "}
+                          Testcase {idx + 1}{" "}
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                {executionOutput && <div className={`rounded-4xl px-5 py-2 font-semibold text-xl ${executionOutput === 'Wrong_Answer' ? 'text-red-400' : 'text-green-600'}`}>{executionOutput}</div>}
+                {
+                  testcaseOutput?.[0]?.stderr && (<pre className="rounded-4xl px-5 py-2 m-5 bg-[hsla(0,100%,50%,0.1)] text-red-400">{testcaseOutput[0]?.stderr}</pre>)
+                }
+                <div className=" border-2 border-gray-700 m-3 p-6 rounded-3xl ">
+                  Input : {problem?.testcases[index].input}
+                  <br />
+                  Expected Output : {problem?.testcases[index].output}
+                  <br />
+                  <br/>
+                  { testcaseOutput?.length !== 0 ? 
+                    <p 
+                      className={`border-1 w-fit px-10 py-2 rounded-2xl shadow-xl ${problem?.testcases?.[index]?.output?.trim() === testcaseOutput?.[index]?.stdout?.trim() ? 'border-green-400' : 'border-red-400'}`}
+                      >
+                        Output: {(testcaseOutput?.[index]?.stdout)}</p> 
+                        : 
+                        ""
+                      }
                 </div>
-              ))}
-            </div>
-            <div className=" border-2 border-gray-700 m-3 p-6 rounded-3xl ">
-              Input : {problem?.testcases[index].input}
-              <br />
-              Expected Output : {problem?.testcases[index].output}
-              <br />
-            </div>
+                </div>
+            ) : (
+              <div className="space-y-4">
+               {testcaseOutput?.length > 0 ? (
+                  <div className="overflow-x-auto">
+                    <table className="table w-full text-left">
+                      <thead className="bg-base-200">
+                        <tr>
+                          <th className="p-3">#</th>
+                          <th className="p-3">Result</th>
+                          
+                          <th className="p-3">Expected</th>
+                          <th className="p-3">Stdout</th>
+                          <th className="p-3">Status</th>
+                          <th className="p-3">Memory</th>
+                          <th className="p-3">Time</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {testcaseOutput.map((testcase, idx) => (
+                          <tr key={idx} className="hover:bg-base-100 border-t">
+                            <td className="p-3 font-semibold">{idx + 1}</td>
+                            <td className={`p-3 font-medium ${testcase.passed ? 'text-green-400' : 'text-red-400'}`}>
+                              {testcase.passed ? '✅ Passed' : '❌ Failed'}
+                          
+                            </td>
+                            <td className="p-3">{testcase.expected_output || testcase.expected || '-'}</td>
+                            <td className="p-3">{testcase.stdout || '-'}</td>
+                            <td className="p-3">{testcase.status || '-'}</td>
+                            <td className="p-3">{testcase.memory || '-'}</td>
+                            <td className="p-3">{testcase.time || '-'}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                ) : (
+                  <p className="text-gray-500 m-5 p-5">No results yet.</p>
+                )}
+              </div>
+)}
+           
+            
           </div>
         </div>
       </div>

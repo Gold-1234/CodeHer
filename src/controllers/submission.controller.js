@@ -30,6 +30,8 @@ export const getAllSubmissions = async( req, res ) => {
 }
 
 export const getSubmissionForProblem = async( req, res ) => {
+	console.log('hello');
+	
 	try {
 		const { problemId } = req.params
 		const userId = req.user.id;
