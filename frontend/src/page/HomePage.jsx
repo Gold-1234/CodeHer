@@ -14,7 +14,7 @@ export const HomePage = ( user ) => {
   const [ searchText, setSearchText ] = useState("")
   const [ difficulty, setDifficulty ] = useState("")
   const [ selectedTags, setSelectedTags ] = useState([])
-  const { toggleFloating, isCreatingList, list, createList, pushList, togglePush, getList, lists} = useHomePageStore()
+  const { toggleFloating, isCreatingList, list, createList, pushList, togglePush, getList, lists, saveNewList} = useHomePageStore()
   const [existing_lists, setLists] = useState([]);
   const changeDifficulty = (e) => {
     setDifficulty(e)
@@ -33,7 +33,7 @@ export const HomePage = ( user ) => {
       }
       fetch_lists()
     }
-  }, [isCreatingList])
+  }, [isCreatingList, saveNewList, list])
 
   const handleTags = ( e ) => {    
       const checked = e.target.checked

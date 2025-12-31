@@ -121,7 +121,7 @@ export const ProblemList = ( { filters, user } ) => {
         onClick={() => handleClick(problem)}
       >
         
-        <div className="flex items-center gap-3 min-w-0" onClick={(e) => e.stopPropagation()}>
+        <div className="flex items-center gap-3 min-w-0" >
           {checkStatus(problem.id) && <Check className="text-green-500 h-5 w-5 shrink-0"/> }
             {
                 isCreatingList && <input type="checkbox" checked = {list.some((p => p.id === problem.id))} onChange={(e) => {

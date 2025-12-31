@@ -42,7 +42,7 @@ export const createProblem = async( req, res ) => {
 
 				const result = results[i]
 				if(result.status.id !== 3){
-					throw new ApiError(400, `Testcase ${i+1} failed.`)
+					throw new ApiError(400, `Testcase ${i+1} failed`)
 				}
 				console.log(`Result -- ${JSON.stringify(result)}`);
 			}
@@ -65,14 +65,14 @@ export const createProblem = async( req, res ) => {
 			})
 
 			return res.status(200).json(
-				new ApiResponse(200, problem, "Problem created.")
+				new ApiResponse(200, problem, "Problem created")
 			)
 		}
 		
 	} catch (error) {
 		console.log(error);
 		if(error instanceof ApiError){
-			return res.status(200).json(
+			return res.status(error.statusCode).json(
 				new ApiResponse(error.statusCode, null, error.message)
 			)
 		} 

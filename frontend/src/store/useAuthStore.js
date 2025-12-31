@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { axiosInstance } from "../lib/axios.js"
 import toast from "react-hot-toast";
-
+import { useNavigate } from "react-router-dom";
 
 export const useAuthStore = create( (set) => ({
 
@@ -15,10 +15,7 @@ export const useAuthStore = create( (set) => ({
 		try {
 			const res = await axiosInstance.get('/auth/check')
 			console.log(`check auth response: `, res.data);
-
-			
-			set({ authUser : res.data.data.user})
-			
+			set({ authUser : res.data.data.user})			
 		} catch (error) {
 			console.log(`Error checking user.`, error);
 			set({ authUser : null })
@@ -38,6 +35,7 @@ export const useAuthStore = create( (set) => ({
 				toast.error(res.data.message)
 			} else {
 				toast.success(res.data.message)
+
 			}
 			
 		} catch (error) {
@@ -80,7 +78,7 @@ export const useAuthStore = create( (set) => ({
 			console.log(`Logout response:`, res);
 
 			console.log(res.data.message);
-			
+
 			set({ authUser : null})
 			if(!res.data.success){
 				toast.error(res.data.message)
@@ -92,6 +90,19 @@ export const useAuthStore = create( (set) => ({
 			toast.error(error.response.data.message)
 		} finally {
 			set({ isCheckingAuth : false })
+		}
+	},
+
+	updateAvatar : async( imageUrl ) => {
+		try {
+			const res = await axiosInstance.post('/auth/update-avatar', { imageUrl })
+			console.log(`Update avatar response:`, res.data);
+
+			set({ authUser : res.data.data.user})
+			toast.success(res.data.message)
+		} catch (error) {
+			console.log(`Error updating avatar.`, error);
+			toast.error(error.response?.data?.message || 'Failed to update avatar')
 		}
 	}
 }))

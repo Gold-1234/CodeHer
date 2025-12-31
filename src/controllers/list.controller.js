@@ -5,30 +5,47 @@ import { ApiError } from "../utils/api-error.js"
 export const getAllLists = async ( req, res ) => {
 
 	const userId = req.user.id;
-
+	console.log('fetching lists')
 	try {
-		const lists = await db.list.findMany({
+		const lists = await db.List.findMany({
 			where: {
 				userId
+			},
+			include: {
+				problems: {
+					include: {
+						problem : true
+					}
+				}
 			}
 		});
-
+		console.log(lists.problems?.name);
+		
 		return res.status(200).json(
 			new ApiResponse(200, lists, "Lists fetched.")
 		)
 	} catch (error) {
 		console.log(error);
-		return new ApiResponse(400, error.message, "Error fetching lists.")
+		return res.status(200).json(
+			new ApiResponse(400, error.message, "Error fetching lists.")		
+		)	
 	}
 }
 
 export const getListDetails = async ( req, res ) => {
-	const listId = req.params.id.trim();
+	const listId = req.params.id
 	
 	try{
 		const list = await db.List.findUnique({
 			where: {
 				id: listId
+			},
+			include: {
+				problems: {
+					include: {
+						problem: true
+					}
+				}
 			}
 		})
 		console.log(list);
@@ -120,7 +137,8 @@ export const updateList = async ( req, res ) => {
 }
 
 export const addProblemToList = async ( req, res ) => {
-
+	console.log('request in add problem, problems : ', req.body.problems);
+	
 	const { problems } = req.body;
 	const listId  = req.params.id;
 	

@@ -14,6 +14,8 @@ import AddProblem from "./page/AddProblem";
 import { LandingPage } from "./page/LandingPage";
 import { ProblemPage } from "./page/ProblemPage";
 import { SetsPage } from "./page/SetsPage";
+import { ListPage } from "./page/ListPage";
+import { ProfilePage } from "./page/ProfilePage";
 
 function App() {
   const { authUser, checkAuth, isCheckingAuth } = useAuthStore();
@@ -34,17 +36,8 @@ function App() {
     <div className="flex flex-col items-center justify-start dark:text-white w-full h-screen overflow-auto">
       <Toaster />
       <Routes>
-        {/* Root redirect */}
-        <Route
-          path="/"
-          element={
-            authUser ? (
-              <Navigate to="/home" replace />
-            ) : (
-              <Navigate to="/login" replace />
-            )
-          }
-        />
+        {/* Root - Landing Page */}
+        <Route path="/" element={<LandingPage />} />
 
         {/* Auth routes */}
         <Route element={<AuthLayout />}>
@@ -75,6 +68,8 @@ function App() {
             }
           />
           <Route path="sets" element={<SetsPage />} />
+          <Route path="list/:id" element={<ListPage />} />
+          <Route path="profile" element={<ProfilePage />} />
           <Route element={<AdminRoute />}>
             <Route path="add-problem" element={<AddProblem />} />
           </Route>

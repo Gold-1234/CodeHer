@@ -7,8 +7,7 @@ const CodeEditor = ({ value, onChange, language, width : parent, readOnly }) => 
 
 	return (
 		<div className='h-full w-full text-black'>
-			{/* <Editor
-				value={value}/> */}
+		
 			<Editor
 				width='100%'
 				height='100%'
@@ -16,7 +15,7 @@ const CodeEditor = ({ value, onChange, language, width : parent, readOnly }) => 
 				onChange={onChange}
 				language={language}
 				theme={theme}
-				defaultLanguage='javascript'
+				// defaultLanguage='javascript'
 				className='absolute inset-0'
 				options={ { minimap: { enabled: true },
 										readOnly: readOnly,

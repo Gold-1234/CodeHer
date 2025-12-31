@@ -30,7 +30,6 @@ export const CreateList = ({ existingLists }) => {
     <div className="fixed inset-0 flex items-center justify-center bg-black/40 z-50">
       <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-xl w-[450px] max-h-[80vh] overflow-y-auto">
         
-        {/* Problems Preview */}
         <h3 className="font-bold mb-2">Problems to add</h3>
         {list.length > 0 ? (
           <ul className="mb-4 rounded">
@@ -55,7 +54,6 @@ export const CreateList = ({ existingLists }) => {
 
         {mode === "select" && (
           <>
-            {/* Select Existing List */}
             <h3 className="font-bold mb-2">Select a List</h3>
             <select
               className="select select-bordered w-full mb-4"
@@ -122,7 +120,7 @@ export const CreateList = ({ existingLists }) => {
           </>
         )}
 
-        {/* ✅ Save All Button */}
+        {/* Save All Button */}
         {/* {list.length > 0 && (
           <button 
             className="btn btn-success mt-4 w-full"

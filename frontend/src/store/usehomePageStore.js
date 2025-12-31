@@ -9,6 +9,7 @@ export const useHomePageStore = create((set, get) => ({
   mode: "select",
   pushList: false,
   lists: [],
+  isLoading : false,
 
   togglePush: () => set((s) => ({ pushList: !s.pushList, mode: "select" })),
   toggleFloating: () => set((s) => ({ isCreatingList: !s.isCreatingList, mode: "select" })),
@@ -20,7 +21,8 @@ export const useHomePageStore = create((set, get) => ({
 
   getList: async () => {
     try {
-      const res = await axiosInstance.get("/list/")
+      set({isLoading: true})
+      const res = await axiosInstance.get("/list/all")
       const lists = res?.data.data || []
       set({lists: lists})
       return lists
@@ -28,6 +30,8 @@ export const useHomePageStore = create((set, get) => ({
       console.error("Error fetching lists:", err)
       toast.error("Failed to load lists")
       return []
+    } finally{
+      set({isLoading: false})
     }
   },
 
@@ -53,6 +57,8 @@ export const useHomePageStore = create((set, get) => ({
     try {
       await axiosInstance.post("/list/create", { name, description })
       toast.success("List created successfully!")
+      console.log('list created')
+      await get().getList()
       set({ list: [], mode: "select" })
     } catch (err) {
       toast.error("Failed to create list")

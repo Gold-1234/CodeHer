@@ -25,22 +25,23 @@ const useProblemStore = create (( set, get ) => ({
 			set({ isCreatingProblem : true })
 			
 			const res = await axiosInstance.post('/problem/create', value)
-
+			console.log("error in submitting", res);
+			
 			if(res) toast.success(res.data.message || "Problem created successfully.")
 			set({ isSubmitted : true })
 			setTimeout(() => {
 				navigation("/")
 			}, 500);
 		} catch (error) {
-			console.log(error);
-			toast.error("Error creating problem.")
+			console.log(error.response.data.message);
+			const err = error.response.data.message
+			toast.error(err)
 		} finally {
 			set({ isCreatingProblem : false })
 		}
 		},
 
 	getAllProblems : async ( page, limit ) => {
-		console.log('called get all problems');
 		
 		try {
 			set({ isProblemsLoading : true })

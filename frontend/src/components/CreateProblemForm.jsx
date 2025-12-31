@@ -70,7 +70,7 @@ const sampledpData = {
   category: "dp", // Dynamic Programming
   description:
     "You are climbing a staircase. It takes n steps to reach the top. Each time you can either climb 1 or 2 steps. In how many distinct ways can you climb to the top?",
-  difficulty: "EASY",
+  difficulty: "MEDIUM",
   tags: ["Dynamic Programming", "Math", "Memoization"],
   constraints: ["1 <= n <= 45"],
   hints:[
@@ -310,7 +310,6 @@ class Main {
 }`,
   },
 };
-
 const sampleStringProblem = {
   title: "Valid Palindrome",
   description:
@@ -318,9 +317,9 @@ const sampleStringProblem = {
   difficulty: "EASY",
   tags: ["String", "Two Pointers"],
   constraints:
-    ["1 <= s.length <= 2 * 10^5\ns consists only of printable ASCII characters."],
+    "1 <= s.length <= 2 * 10^5\ns consists only of printable ASCII characters.",
   hints:
-    ["Consider using two pointers, one from the start and one from the end, moving towards the center."],
+    "Consider using two pointers, one from the start and one from the end, moving towards the center.",
   editorial:
     "We can use two pointers approach to check if the string is a palindrome. One pointer starts from the beginning and the other from the end, moving towards each other.",
   testcases: [
@@ -337,25 +336,25 @@ const sampleStringProblem = {
       output: "true",
     },
   ],
-  examples: [
-    {
+  examples: {
+    JAVASCRIPT: {
       input: 's = "A man, a plan, a canal: Panama"',
       output: "true",
       explanation: '"amanaplanacanalpanama" is a palindrome.',
     },
-    {
+    PYTHON: {
       input: 's = "A man, a plan, a canal: Panama"',
       output: "true",
       explanation: '"amanaplanacanalpanama" is a palindrome.',
     },
-    {
+    JAVA: {
       input: 's = "A man, a plan, a canal: Panama"',
       output: "true",
       explanation: '"amanaplanacanalpanama" is a palindrome.',
     },
-  ],
+  },
   codeSnippets: {
-    javascript: `/**
+    JAVASCRIPT: `/**
    * @param {string} s
    * @return {boolean}
    */
@@ -380,7 +379,7 @@ const sampleStringProblem = {
     console.log(result ? "true" : "false");
     rl.close();
   });`,
-    python: `class Solution:
+    PYTHON: `class Solution:
       def isPalindrome(self, s: str) -> bool:
           # Write your code here
           pass
@@ -397,7 +396,7 @@ const sampleStringProblem = {
       
       # Output result
       print(str(result).lower())  # Convert True/False to lowercase true/false`,
-    java: `import java.util.Scanner;
+    JAVA: `import java.util.Scanner;
 
 public class Main {
     public static String preprocess(String s) {
@@ -419,7 +418,7 @@ public class Main {
 `,
   },
   referenceSolutions: {
-    javascript: `/**
+    JAVASCRIPT: `/**
    * @param {string} s
    * @return {boolean}
    */
@@ -459,7 +458,7 @@ public class Main {
     console.log(result ? "true" : "false");
     rl.close();
   });`,
-    python: `class Solution:
+    PYTHON: `class Solution:
       def isPalindrome(self, s: str) -> bool:
           # Convert to lowercase and keep only alphanumeric characters
           filtered_chars = [c.lower() for c in s if c.isalnum()]
@@ -479,7 +478,7 @@ public class Main {
       
       # Output result
       print(str(result).lower())  # Convert True/False to lowercase true/false`,
-    java: `import java.util.Scanner;
+    JAVA: `import java.util.Scanner;
 
 public class Main {
     public static String preprocess(String s) {
@@ -510,7 +509,6 @@ public class Main {
 `,
   },
 };
-
 const CreateProblemForm = ({ formData, mode }) => {
   
   const [sampleType , setSampleType] = useState("DP")
@@ -525,6 +523,10 @@ const CreateProblemForm = ({ formData, mode }) => {
   useEffect(() => setLanguage("javascript"), [])
   useEffect(() => setSolutionLanguage("javascript"), [])
   useEffect(() => setIsLoading(false), [])
+
+  useEffect(()=> {
+    console.log("language", language);
+  }, [language])
 
   const { id } = useParams()
   let defaultValues = {
@@ -645,12 +647,11 @@ const CreateProblemForm = ({ formData, mode }) => {
   }, [ formData, reset ])
 
   const loadSampleData = () => {
-    const sampleData = sampleType === "DP" ? sampledpData : sampleStringProblem
+    const sampleData = sampleType === "DP" ? sampledpData : sampleStringData
   
     replaceTags(sampleData.tags.map((tag) => tag));
     replaceTestcases(sampleData.testcases.map((tc) => tc));
 
-   // Reset the form with sample data
     reset(sampleData);
     
   }
@@ -729,7 +730,7 @@ const CreateProblemForm = ({ formData, mode }) => {
                 </div>
                 <button
                   type="button"
-                  className="btn btn-secondary gap-2"
+                  className="btn btn-secondary gap-2 text-amber-50"
                   onClick={loadSampleData}
                 >
                   <Download className="w-4 h-4" />

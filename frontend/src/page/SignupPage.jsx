@@ -3,12 +3,9 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod'; 
 import axios from 'axios';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Code, Eye, EyeOff, Loader2, Lock, LogIn, Mail } from 'lucide-react';
 import { useAuthStore } from '../store/useAuthStore';
-
-
-const passValidation =	/^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#$%^&*_-]).*$/;
 
 
 const signupSchema = z.object({
@@ -27,6 +24,7 @@ const signupSchema = z.object({
 const SignupPage = () => {
 
 	const { signUp, isSigningUp, authUser } = useAuthStore();
+	const navigate = useNavigate()
 
 	const [showPassword, setShowPassword ] = useState(false);
 
@@ -41,14 +39,21 @@ const SignupPage = () => {
 
 	const onSubmit = async( data ) => {	
 		try {
-			console.log(data);
+			console.log("data in signup", data);
 			const response = await signUp(data);
+			console.log("on submit response in signup", response);
 			
 			if(!data.name || !data.email || !data.password){
 				throw new Error("Missing fields.")
 			}
-			console.log(authUser);
-			
+				setTimeout(() => {try {
+						navigate('/login')
+						console.log('redirected');
+						
+				} catch (error) {
+					console.log(error);	
+					}
+				}, 500);
 		} catch (error) {
 			setError("root", { message: "All fields required."})
 			console.log(error);

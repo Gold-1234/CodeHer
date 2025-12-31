@@ -63,10 +63,11 @@ export const register = async(req, res) => {
 					role: newUser.role,
 					id: newUser.id,
 					name: newUser.name,
-					image: newUser.image
+					image: newUser.image,
+					createdAt: newUser.createdAt
 				}
 			},
-			"Registered successfully"
+			"Registered successfully, Please login."
 		))
 	} catch (error) {
 		console.log(error)
@@ -96,7 +97,7 @@ export const login = async(req, res) => {
 		console.log(user);
 		
 		if(!user){
-			throw new ApiError(400, "User not found")
+			throw new ApiError(400, "Couldn't find your account, Please register.")
 		}
 		const verifyUser = await bcrypt.compare(password, user.password)
 		console.log(verifyUser);
@@ -132,7 +133,8 @@ export const login = async(req, res) => {
 						role: user.role,
 						id: user.id,
 						name: user.name,
-						image: user.image
+						image: user.image,
+						createdAt: user.createdAt
 						}
 					},
 					"Logged In"
@@ -196,6 +198,47 @@ export const check = async(req, res) => {
 	}
 }
 
+export const updateAvatar = async(req, res) => {
+	const userId = req.user.id;
+	const { imageUrl } = req.body;
+
+	try {
+		const user = await db.user.update({
+			where:{
+				id: userId,
+			},
+			data:{
+				image: imageUrl,
+			}
+		});
+
+		return res.status(200).json(
+			new ApiResponse(200, {
+				message: "Avatar updated successfully.",
+				user: {
+					id: user.id,
+					name: user.name,
+					email: user.email,
+					image: user.image,
+					role: user.role,
+					createdAt: user.createdAt
+				}
+			})
+		)
+	} catch (error) {
+		console.log(error);
+		if(error instanceof ApiError){
+			return res.status(error.statusCode).json(
+				new ApiResponse(error.statusCode, null, error.message)
+			)
+		} else {
+			return res.status(400).json(
+				new ApiResponse(400, error.message, "Error updating avatar.")
+			)
+		}
+	}
+}
+
 export const createAdmin = async(req, res) => {
 	const userId = req.body.id;
 
@@ -208,7 +251,7 @@ export const createAdmin = async(req, res) => {
 				role: UserRole.ADMIN,
 			}
 		});
-		
+
 		return res.status(200).json(
 			new ApiResponse(200, {
 				message: "Admin created.",
@@ -224,9 +267,9 @@ export const createAdmin = async(req, res) => {
 		} else {
 			return res.status(400).json(
 				new ApiResponse(400, error.message, "Error creating admin.")
-			)			
+			)
 		}
 	}
-	
+
 
 }

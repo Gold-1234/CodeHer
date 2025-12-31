@@ -4,7 +4,7 @@ import { addProblemToList, createList, deleteList, getAllLists, getListDetails, 
 
 const listRouter = Router();
 
-listRouter.get('/', verifyAuth, getAllLists);
+listRouter.get('/all', verifyAuth, getAllLists);
 
 listRouter.get('/getList/:id', verifyAuth, getListDetails);
 

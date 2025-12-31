@@ -13,7 +13,7 @@ const Navbar = () => {
   return (
       <div className="navbar bg-base-100 w-full shadow backdrop-blur ">
         <div className="flex-1 flex-row flex items-center ">
-          <Link className="flex flex-row items-center m-4" to={'/home'}> 
+          <Link className="flex flex-row items-center m-4" to={'/'}> 
           <img src="codeher.svg" alt="" className="h-8 w-8 " />
           <p className="btn btn-ghost text-3xl pointer-events-none montserrat-bold dark:text-white -ml-2">
           CodeHer
@@ -26,7 +26,7 @@ const Navbar = () => {
               className={`btn text-lg rounded-4xl hover:border-secondary ${ activeSection === "Problems" ? "btn-active border-secondary" : "btn-ghost"}`}
               onClick={() => setActiveSection("Problems")}
             >
-              <Link to="/">Problems</Link>
+              <Link to="/home">Problems</Link>
             </button>
             <button className={`btn text-lg rounded-4xl hover:border-secondary ${ activeSection === "Sets" ? "btn-active" : "btn-ghost"}`}
               onClick={() => setActiveSection("Sets")}>
@@ -34,12 +34,6 @@ const Navbar = () => {
                 Sets
                 </Link>
               </button>
-            <button className={`btn text-lg rounded-4xl hover:border-secondary ${ activeSection === "Dashboard" ? "btn-active" : "btn-ghost"}`}
-              onClick={() => setActiveSection("Dashboard")}>
-                <Link to="/dashboard">
-                Dashboard
-                </Link>
-                </button>
             
         </div>
         </div>
@@ -68,10 +62,9 @@ const Navbar = () => {
               className="menu menu-md dropdown-content bg-base-200 rounded-box z-1 mt-3 w-52 p-2 shadow"
             >
               <li>
-                <a className="justify-between">
+                <Link to="/home/profile" className="justify-between">
                   Profile
-                 
-                </a>
+                </Link>
               </li>
               {
                 authUser?.role === "ADMIN" && (
@@ -83,9 +76,7 @@ const Navbar = () => {
               </li>
                 )
               }
-              <li>
-                <a>Settings</a>
-              </li>
+        
               
               <li>
                 <LogoutButton className="hover:bg-warning hover:text-white">Logout</LogoutButton>

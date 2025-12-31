@@ -31,7 +31,8 @@ export const verifyAuth = async(req, res, next) => {
 				image: true,
 				name: true,
 				email: true,
-				role: true
+				role: true,
+				createdAt: true
 			}
 		})
 
