@@ -104,5 +104,21 @@ export const useAuthStore = create( (set) => ({
 			console.log(`Error updating avatar.`, error);
 			toast.error(error.response?.data?.message || 'Failed to update avatar')
 		}
+	},
+
+	signinWithGoogle : async (credentialResponse) => {
+		try {
+			const res = await axiosInstance.post('/auth/user', {
+				credential: credentialResponse.credential
+			});
+			console.log('Google auth response:', res.data);
+
+			// Update auth state with user data
+			set({ authUser: res.data.data.user });
+			toast.success(res.data.message);
+		} catch (error) {
+			console.error('Google auth error:', error);
+			toast.error(error.response?.data?.message || 'Google authentication failed');
+		}
 	}
 }))

@@ -1,14 +1,15 @@
 import bcrypt from "bcryptjs"
+import jwt from "jsonwebtoken"
+import { OAuth2Client } from "google-auth-library";
+
 import { db } from "../libs/db.js";
 import { UserRole } from "../generated/prisma/index.js";
-import jwt from "jsonwebtoken"
 import { ApiError } from "../utils/api-error.js";
 import { ApiResponse } from "../utils/api-response.js";
 
 export const register = async(req, res) => {
 	
 	const { email, password, name} = req.body;
-	console.log("req on register user route");
 	if(!email || !password){
 		throw new ApiError(400, "All fields required")
 	}
@@ -28,9 +29,10 @@ export const register = async(req, res) => {
 		const newUser = await db.user.create({
 			data: {
 				email,
-				password: hashedPassword, 
+				password: hashedPassword,
 				name,
-				role: UserRole.USER
+				role: UserRole.USER,
+				authProvider: 'EMAIL'
 			}
 		})
 
@@ -70,8 +72,6 @@ export const register = async(req, res) => {
 			"Registered successfully, Please login."
 		))
 	} catch (error) {
-		console.log(error)
-		console.log(error);
 		if(error instanceof ApiError){
 			return res.status(200).json(
 				new ApiResponse(error.statusCode, null, error.message)
@@ -92,26 +92,34 @@ export const login = async(req, res) => {
 		const user = await db.user.findUnique({
 			where: {
 				email
-			}	
+			}
 		})
-		console.log(user);
-		
+
 		if(!user){
 			throw new ApiError(400, "Couldn't find your account, Please register.")
 		}
+
+		// Check if user signed up with Google (no password)
+		if (user.authProvider === 'GOOGLE') {
+			throw new ApiError(400, "This account uses Google authentication. Please sign in with Google.")
+		}
+
+		// Check if user has a password (should have one for EMAIL auth)
+		if (!user.password) {
+			throw new ApiError(400, "Account setup incomplete. Please contact support.")
+		}
+
 		const verifyUser = await bcrypt.compare(password, user.password)
-		console.log(verifyUser);
-		
+
 		if(!verifyUser){
 			throw new ApiError(400, "Invalid credentials")
 		}
-		
+
 		const token = jwt.sign(
 			{id: user.id},
 			process.env.JWT_SECRET,
 			{expiresIn: 1000 * 60 * 60 * 24 * 7}
 		)
-		console.log(token);
 		
 		res.cookie(
 				"jwt",
@@ -141,8 +149,6 @@ export const login = async(req, res) => {
 				)
 			)
 	} catch (error) {
-		console.log(error);
-		console.log(error);
 		if(error instanceof ApiError){
 			return res.status(400).json(
 				new ApiResponse(error.statusCode, null, error.message)
@@ -168,7 +174,6 @@ export const logout = async(req, res) => {
 			message: "Logout Successfull"
 		})
 	} catch (error) {
-		console.log(error);
 		res.status(500).json({
 			message: "Error logging out"
 		})
@@ -185,7 +190,6 @@ export const check = async(req, res) => {
 			})
 		)
 	} catch (error) {
-		console.log(error);
 		if(error instanceof ApiError){
 			return res.status(error.statusCode).json(
 				new ApiResponse(error.statusCode, null, error.message)
@@ -226,7 +230,6 @@ export const updateAvatar = async(req, res) => {
 			})
 		)
 	} catch (error) {
-		console.log(error);
 		if(error instanceof ApiError){
 			return res.status(error.statusCode).json(
 				new ApiResponse(error.statusCode, null, error.message)
@@ -272,4 +275,103 @@ export const createAdmin = async(req, res) => {
 	}
 
 
+}
+
+export const googleAuth = async(req, res) => {
+	try {
+		const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+
+		const credential = req.body.credential;
+
+		// Verify the Google JWT token
+		const ticket = await client.verifyIdToken({
+			idToken: credential,
+			audience: process.env.GOOGLE_CLIENT_ID,
+		});
+
+		const payload = ticket.getPayload();
+
+		if (!payload) {
+			throw new ApiError(400, 'Invalid Google token');
+		}
+
+		const { sub: googleId, email, name, picture: image } = payload;
+
+		let user = await db.user.findFirst({
+			where: {
+				OR: [
+					{ email: email },
+					
+				]
+			}
+		});
+
+		if (!user) {
+			user = await db.user.create({
+				data: {
+					email,
+					name,
+					image: image || null,
+					role: UserRole.USER,
+					authProvider: 'GOOGLE',
+					googleId: googleId
+				}
+			});
+		} else {
+			const updateData = {};
+			if (!user.image && image) updateData.image = image;
+			if (!user.googleId) updateData.googleId = googleId;
+			if (user.authProvider !== 'GOOGLE') updateData.authProvider = 'GOOGLE';
+
+			if (Object.keys(updateData).length > 0) {
+				user = await db.user.update({
+					where: { id: user.id },
+					data: updateData
+				});
+			}
+		}
+
+		// Generate JWT token for your app
+		const token = jwt.sign(
+			{ id: user.id },
+			process.env.JWT_SECRET,
+			{ expiresIn: '7d' }
+		);
+
+		res.cookie(
+			"jwt",
+			token,
+			{
+				httpOnly: true,
+				sameSite: "strict",
+				secure: process.env.NODE_ENV !== "development",
+				maxAge: 1000 * 60 * 60 * 24 * 7 // 7 days
+			}
+		);
+
+		res.status(200).json(
+			new ApiResponse(200, {
+				user: {
+					id: user.id,
+					email: user.email,
+					name: user.name,
+					image: user.image,
+					role: user.role,
+					createdAt: user.createdAt
+				}
+			}, "Google authentication successful")
+		);
+
+	} catch (error) {
+		console.error('Google auth error:', error);
+		if (error instanceof ApiError) {
+			return res.status(error.statusCode).json(
+				new ApiResponse(error.statusCode, null, error.message)
+			);
+		} else {
+			return res.status(400).json(
+				new ApiResponse(400, null, 'Google authentication failed')
+			);
+		}
+	}
 }

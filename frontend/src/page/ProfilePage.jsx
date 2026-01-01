@@ -73,19 +73,25 @@ export const ProfilePage = () => {
                               alt="Profile"
                             />
                           </div>
+                
+                          
                         </div>
-                        <div className="flex-1">
+                        <div className="flex-1 ">
                           <h3 className="text-xl font-semibold">{authUser?.name || 'User'}</h3>
                           <p className="text-base-content/70">{authUser?.email}</p>
-                          <div className="badge badge-primary mt-1">
-                            {authUser?.role || 'USER'}
+                          <div className='flex '>
+                            <div className="badge badge-primary mt-3">
+                              {authUser?.role || 'USER'}
+                            </div>
+                            <div className='flex-col items-end'>
+                               <button
+                              className="btn btn-sm btn-outline mt-2 m-5"
+                              onClick={() => setShowAvatarSelector(!showAvatarSelector)}
+                            >
+                              Change Avatar
+                            </button>
+                            </div>
                           </div>
-                          <button
-                            className="btn btn-sm btn-outline mt-2"
-                            onClick={() => setShowAvatarSelector(!showAvatarSelector)}
-                          >
-                            Change Avatar
-                          </button>
                         </div>
                       </div>
 

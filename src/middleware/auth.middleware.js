@@ -2,8 +2,6 @@ import jwt from "jsonwebtoken"
 import { db } from "../libs/db.js"
 
 export const verifyAuth = async(req, res, next) => {
-	console.log('running verify auth');
-	
 	try {
 		const token = req.cookies.jwt
 		if(!token){
@@ -32,7 +30,9 @@ export const verifyAuth = async(req, res, next) => {
 				name: true,
 				email: true,
 				role: true,
-				createdAt: true
+				createdAt: true,
+				authProvider: true,
+				googleId: true
 			}
 		})
 
@@ -45,7 +45,6 @@ export const verifyAuth = async(req, res, next) => {
 		req.user = user;
 		next()
 	} catch (error) {
-		console.log(error)
 		res.status(400).json({
 			error: "Error authenticating user."
 		})
@@ -62,7 +61,6 @@ export const checkAdmin = async(req, res, next) => {
 		}
 		next()
 	} catch (error) {
-		console.log(error);
 		return res.status(400).json({
 			error: "Not an admin."
 		})

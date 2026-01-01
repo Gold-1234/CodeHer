@@ -1,15 +1,15 @@
 import { Router } from "express";
-import { check, createAdmin, login, logout, register, updateAvatar } from "../controllers/auth.controller.js";
+import { check, createAdmin, googleAuth, login, logout, register, updateAvatar } from "../controllers/auth.controller.js";
 import { checkAdmin, verifyAuth } from "../middleware/auth.middleware.js";
 
 const authRouter = Router();
 
 authRouter.post("/register", register)
 authRouter.post("/login", login)
+authRouter.post("/user", googleAuth)
 authRouter.post("/logout", verifyAuth, logout)
 authRouter.get("/check", verifyAuth,check)
 authRouter.post("/update-avatar", verifyAuth, updateAvatar)
 authRouter.get("/create-admin", verifyAuth, checkAdmin, createAdmin)
-
 
 export default authRouter;

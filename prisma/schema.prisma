@@ -13,15 +13,22 @@ enum UserRole {
   USER
 }
 
+enum AuthProvider {
+  EMAIL
+  GOOGLE
+}
+
 model User {
-  id        String   @id @default(uuid())
-  name      String?
-  email     String   @unique
-  image     String?
-  role      UserRole @default(USER)
-  password  String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now())
+  id           String       @id @default(uuid())
+  name         String?
+  email        String       @unique
+  image        String?
+  role         UserRole     @default(USER)
+  password     String?
+  authProvider AuthProvider @default(EMAIL)
+  googleId     String?
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @default(now())
 
   problems       Problem[]
   submissions    Submission[]

@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
 import { Loader } from "lucide-react";
+import { GoogleOAuthProvider } from '@react-oauth/google';
 
 import LoginPage from "./page/LoginPage";
 import { HomePage } from "./page/HomePage";
@@ -19,6 +20,7 @@ import { ProfilePage } from "./page/ProfilePage";
 
 function App() {
   const { authUser, checkAuth, isCheckingAuth } = useAuthStore();
+  const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID
 
   useEffect(() => {
     checkAuth();
@@ -33,6 +35,8 @@ function App() {
   }
 
   return (
+    <GoogleOAuthProvider clientId={clientId}>
+
     <div className="flex flex-col items-center justify-start dark:text-white w-full h-screen overflow-auto">
       <Toaster />
       <Routes>
@@ -81,6 +85,7 @@ function App() {
         <Route path="problem/edit/:id" element={<AddProblem />} />
       </Routes>
     </div>
+    </GoogleOAuthProvider>
   );
 }
 
