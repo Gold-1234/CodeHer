@@ -4,7 +4,8 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "dev": "nodemon src/index.js"
+    "dev": "nodemon src/index.js",
+    "start": "node src/index.js"
   },
   "keywords": [],
   "author": "",
@@ -22,8 +23,10 @@
     "google-auth-library": "^10.5.0",
     "js": "^0.1.0",
     "jsonwebtoken": "^9.0.2",
-    "nodemon": "^3.1.10",
-    "prisma": "^6.9.0",
     "winston": "^3.17.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.10",
+    "prisma": "^6.9.0"
   }
 }

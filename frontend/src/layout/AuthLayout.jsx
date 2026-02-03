@@ -1,5 +1,5 @@
 import { Outlet } from 'react-router-dom';
-import { FloatingBackground } from '../components/floatingComponent';
+import { FloatingBackground } from '../components/FloatingComponent';
 import ModelViewer from '../components/ModelViewer';
 
 const AuthLayout = () => {
