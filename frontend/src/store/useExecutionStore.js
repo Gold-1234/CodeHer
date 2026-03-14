@@ -10,18 +10,15 @@ export const useExecutionStore = create (( set, get ) => ({
 
 	submitCode : async( value ) => {
 		try {
-			console.log(JSON.stringify(value));
 			set({ submittingCode: true })
 			const res = await axiosInstance.post( '/execute-code/submit/', value)
 			if(res){
-				console.log(res.data);
 				toast.success("Submitted")
 			}
 			set({ executionOutput: res.data.data.status })
 			set({ testcaseOutput: res.data.data.testcases})
 			set({ submittingCode: false })
 		} catch (error) {
-			console.log(error);
 			toast.error('Something went wrong!')	
 			set({ submittingCode: false })		
 		} 
@@ -29,17 +26,15 @@ export const useExecutionStore = create (( set, get ) => ({
 
 	executeCode : async( value ) => {
 		try {
-			console.log(JSON.stringify(value));
 			set({ executingCode: true })
 			const res = await axiosInstance.post( '/execute-code/', value)
 			if(res){
-				console.log(res.data);
-			}
+			console.log("response", res);
+			
 			set({ executionOutput: res.data.data.statusSum })
 			set({ testcaseOutput: res.data.data})
-			set({ executingCode: false })
+			set({ executingCode: false })}
 		} catch (error) {
-			console.log(error);
 			toast.error('Something went wrong!')	
 			set({ executingCode: false })		
 		} 

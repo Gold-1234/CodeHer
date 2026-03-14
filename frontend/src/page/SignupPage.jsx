@@ -40,27 +40,21 @@ const SignupPage = () => {
 
 	const onSubmit = async( data ) => {	
 		try {
-			console.log("data in signup", data);
 			const response = await signUp(data);
-			console.log("on submit response in signup", response);
 			
 			if(!data.name || !data.email || !data.password){
 				throw new Error("Missing fields.")
 			}
 				setTimeout(() => {try {
 						navigate('/login')
-						console.log('redirected');
 						
 				} catch (error) {
-					console.log(error);	
 					}
 				}, 500);
 		} catch (error) {
 			setError("root", { message: "All fields required."})
-			console.log(error);
-			
 		}
-	} 
+	}
   return (
 	<>
 		<form className='w-96 card bg-base-200 drop-shadow-purple-950 shadow-sm flex items-center gap-5 p-6 z-2 left-80' onSubmit={handleSubmit(onSubmit)}> 

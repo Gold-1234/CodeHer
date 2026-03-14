@@ -32,23 +32,16 @@ const AddProblem = () => {
 
 	useEffect(() => {
 		if ( id ){
-			console.log(id);
 			getProblemById( id )
-			console.log(problem);
 			setMode('edit')
 		}
 	}, [ ])
 
 	useEffect(() => {
 		if( id ){
-			console.log ( problem );
-			
 			setData( problem )
-			console.log('setting data to problem', problem);
-			
 		} else {
 			setData( defaultValues )
-			console.log('setting data to null');
 		}
 	}, [ problem ] )
 

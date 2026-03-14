@@ -525,7 +525,6 @@ const CreateProblemForm = ({ formData, mode }) => {
   useEffect(() => setIsLoading(false), [])
 
   useEffect(()=> {
-    console.log("language", language);
   }, [language])
 
   const { id } = useParams()
@@ -569,8 +568,6 @@ const CreateProblemForm = ({ formData, mode }) => {
 
   useEffect(() => {
     const subscription = watch((value) => {
-      console.log('hello', value);
-      
       localStorage.setItem("formData", JSON.stringify(value))
     })
     return () => subscription.unsubscribe()
@@ -641,9 +638,6 @@ const CreateProblemForm = ({ formData, mode }) => {
 
   useEffect(() => {
     reset( formData )
-    console.log(formData);
-    console.log("mode", mode);
-    
   }, [ formData, reset ])
 
   const loadSampleData = () => {
@@ -671,7 +665,6 @@ const CreateProblemForm = ({ formData, mode }) => {
       localStorage.removeItem("formData")
     } catch (error) {
       setError("root", { message: "Fill required fields."})
-      console.log(error);
     } finally {
       setIsLoading(false)
     }
@@ -681,11 +674,9 @@ const CreateProblemForm = ({ formData, mode }) => {
     <div className="w-full flex flex-1">
       <form onSubmit={handleSubmit(
             (data) => {
-              console.log("Form submitted successfully with data:", data);
               onSubmit(data);
             },
             (errors) => {
-              console.error("Validation errors:", errors);
             }
           )} 
           className="w-full"

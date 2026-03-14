@@ -28,7 +28,6 @@ export const HomePage = ( user ) => {
     if(isCreatingList){
       const fetch_lists = async () => {
         const lists = await getList()
-        console.log("home page list:", lists);
         setLists(lists)
       }
       fetch_lists()

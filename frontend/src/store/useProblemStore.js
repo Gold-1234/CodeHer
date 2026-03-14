@@ -20,12 +20,10 @@ const useProblemStore = create (( set, get ) => ({
 	resetProblem: () => set({ problems : [], totalPages : 1 }),
 	
 	submitProblem : async ( value, navigation ) => {
-		console.log("submitting....");
 		try {
 			set({ isCreatingProblem : true })
 			
 			const res = await axiosInstance.post('/problem/create', value)
-			console.log("error in submitting", res);
 			
 			if(res) toast.success(res.data.message || "Problem created successfully.")
 			set({ isSubmitted : true })
@@ -33,7 +31,6 @@ const useProblemStore = create (( set, get ) => ({
 				navigation("/")
 			}, 500);
 		} catch (error) {
-			console.log(error.response.data.message);
 			const err = error.response.data.message
 			toast.error(err)
 		} finally {
@@ -51,17 +48,14 @@ const useProblemStore = create (( set, get ) => ({
 			const existingProblems = get().problems
 
 			const merged = [...existingProblems, ...newProblems.filter((p) => !existingProblems.some((e) => e.id === p.id))]
-			console.log(existingProblems);
 			
 			set({ 
 				problems : merged,
 				totalPages : totalPages,
 				// deletingProblem : newProblems.map(() => false )
 			})
-			console.log(get().problems);
 			
 		  } catch (error) {
-			console.log(error);
 		  } finally {
 			set({ isProblemsLoading : false })
 		  }
@@ -71,11 +65,9 @@ const useProblemStore = create (( set, get ) => ({
 		try {
 			set({ isProblemLoading : true })
 			const res = await axiosInstance.get(`/problem/id/${id}`)
-			console.log(res.data.data);
 			
 			set({ problem : res.data.data })
 		} catch (error) {
-			console.log("Error getting problem", error);
 			toast.error( error.message )
 		} finally {
 			set({ isProblemLoading : false })
@@ -86,11 +78,9 @@ const useProblemStore = create (( set, get ) => ({
 		try {
 			set({ isSolvedProblemsLoading : true })
 			const res = await axiosInstance.get('/problem/solved')
-			console.log(res);
 			set({ solvedProblems : res.data })
 			toast.success( res.message )
 		} catch (error) {
-			console.log( "Error getting solved problems ", error);
 			toast.error( error.message )
 		} finally {
 			set({ isSolvedProblemsLoading : false })
@@ -98,22 +88,17 @@ const useProblemStore = create (( set, get ) => ({
 	},
 
 	deleteProblem : async ( id, index ) => {
-		console.log('called delete problem');
-		
 		try {
 			const curr = get().deletingProblem
-			console.log(curr);
 			
 			const updated = [...curr]
 			updated[index] = true
 			set({ deletingProblem : updated })
 			const res = await axiosInstance.delete(`/problem/delete/${id}`)
-			console.log(res);
 			set(( state ) => ({ problems : state.problems.filter(( problem ) => problem.id !== id )}))
 			toast.success( res.data.data )
 			
 		} catch (error) {
-			console.log(error);
 			toast.error( error.message)
 		} finally {
 			const curr = get().deletingProblem
@@ -125,11 +110,7 @@ const useProblemStore = create (( set, get ) => ({
 
 	updateProblem : async ( value, navigation, id ) => {
 		try {
-			console.log("updating problem...");
-			console.log("id", id);
-						
 			const res = await axiosInstance.put(`/problem/update/${id}`, value)
-			console.log( res.data );
 			if(res) toast.success(res.data.message || "Problem updated successfully.")
 
 			set({ isUpdating : true })
@@ -139,7 +120,6 @@ const useProblemStore = create (( set, get ) => ({
 			}, 500);
 		
 		} catch (error) {
-			console.log(error);
 			toast.error(error.message)
 		}
 	}

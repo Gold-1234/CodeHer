@@ -7,6 +7,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Code, Eye, EyeOff, Loader2, Lock, LogIn, Mail } from 'lucide-react';
 import { useAuthStore } from '../store/useAuthStore';
 import { GoogleOAuthProvider, GoogleLogin } from "@react-oauth/google";
+import { GoogleAuth } from '@/components/GoogleAuth';
 
 
 const loginSchema = z.object({
@@ -37,17 +38,12 @@ const LoginPage = () => {
       if(!data.email || !data.password){
 				throw new Error("Missing fields.")
 			}
-      console.log(data);
 			const response = await logIn(data);
-			console.log(response);
-      
 			
     } catch (error) {
       setError("root", { message: "All fields required."})
-      console.log(error);
-      
     }
-  } 
+  }
   return (
   <>
    <form className='w-96  card bg-base-200 drop-shadow-purple-950 shadow-sm flex items-center gap-5 p-6 z-2 left-80' onSubmit={handleSubmit(onSubmit)}> 
@@ -97,19 +93,10 @@ const LoginPage = () => {
               <span className="loading loading-dots loading-lg" style={{backgroundColor:"#DB7093"}} ></span> : "Log In"}
           </button>
           
-              <div className='flex w-full gap-4 items-center justify-center bg-white rounded-3xl'>
+              <div className='flex w-full gap-4 items-center justify-center bg-white rounded-xl'>
 					
-         <div className='bg-white w-full rounded-3xl'>
-           <GoogleLogin
-             onSuccess={(credentialResponse) => {
-               setAuthData(credentialResponse);
-               console.log("Success!", credentialResponse);
-               navigate('/home')
-             }}
-             onError={() => {
-               console.log("Login Failed");
-             }}
-           />
+         <div className='w-full max-w-full overflow-hidden flex justify-center'>
+         <GoogleAuth></GoogleAuth>
            {authData && (
              <div>
                <p>Credential: {authData.credential}</p>

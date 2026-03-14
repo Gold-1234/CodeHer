@@ -1,4 +1,4 @@
-FROM node:22.21.1
+FROM node:22-alpine
 
 WORKDIR /usr/src/app
 
@@ -11,6 +11,6 @@ COPY . .
 
 RUN npx prisma generate
 
-CMD ["node", "index.js"]
+CMD ["node", "src/index.js"]
 
 EXPOSE 8080

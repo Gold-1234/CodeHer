@@ -4,9 +4,9 @@ import { useGoogleOneTapLogin } from '@react-oauth/google';
 
 export const GoogleAuth = () => {
   const login = useGoogleLogin({
-    onSuccess: (tokenResponse) => console.log(tokenResponse),
-	onError: console.log('error occured'),
-  });
+    onSuccess: (tokenResponse) => {},
+    onError: () => {},
+    });
   const { signinWithGoogle } = useAuthStore()
   return (
     <GoogleLogin
@@ -14,7 +14,6 @@ export const GoogleAuth = () => {
     		signinWithGoogle(credentialResponse)
     	}}
     	onError={() => {
-    		console.log('Login Failed');
     	}}
     />
 

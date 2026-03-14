@@ -14,10 +14,8 @@ export const useAuthStore = create( (set) => ({
 		set({ isCheckingAuth : true })
 		try {
 			const res = await axiosInstance.get('/auth/check')
-			console.log(`check auth response: `, res.data);
 			set({ authUser : res.data.data.user})			
 		} catch (error) {
-			console.log(`Error checking user.`, error);
 			set({ authUser : null })
 		} finally {
 			set({ isCheckingAuth : false })
@@ -28,7 +26,6 @@ export const useAuthStore = create( (set) => ({
 		set({ isCheckingAuth : true })
 		try {
 			const res = await axiosInstance.post('/auth/register', data)
-			console.log(`Register response:`, res.data);
 
 			set({ authUser : res.data.user})
 			if(!res.data.success){
@@ -39,7 +36,6 @@ export const useAuthStore = create( (set) => ({
 			}
 			
 		} catch (error) {
-			console.log(`Error registering user.`, error);
 			set({ authUser : null })
 			toast.error(res.data.message)
 		} finally {
@@ -51,10 +47,6 @@ export const useAuthStore = create( (set) => ({
 		set({ isCheckingAuth : true })
 		try {
 			const res = await axiosInstance.post('/auth/login', data)
-			console.log(`Login response:`, res);
-
-			console.log(res.data.data.user);
-			console.log(res.data.message);
 			
 			set({ authUser : res.data.data.user})
 			if(!res.data.success){
@@ -63,7 +55,6 @@ export const useAuthStore = create( (set) => ({
 				toast.success(res.data.message)
 			}
 		} catch (error) {
-			console.log(`Error logging user.`, error);
 			set({ authUser : null })
 			toast.error(error.response.data.message)
 		} finally {
@@ -75,9 +66,6 @@ export const useAuthStore = create( (set) => ({
 		set({ isCheckingAuth : true })
 		try {
 			const res = await axiosInstance.post('/auth/logout', data)
-			console.log(`Logout response:`, res);
-
-			console.log(res.data.message);
 
 			set({ authUser : null})
 			if(!res.data.success){
@@ -86,7 +74,6 @@ export const useAuthStore = create( (set) => ({
 				toast.success(res.data.message)
 			}
 		} catch (error) {
-			console.log(`Error logging out.`, error);
 			toast.error(error.response.data.message)
 		} finally {
 			set({ isCheckingAuth : false })
@@ -96,12 +83,10 @@ export const useAuthStore = create( (set) => ({
 	updateAvatar : async( imageUrl ) => {
 		try {
 			const res = await axiosInstance.post('/auth/update-avatar', { imageUrl })
-			console.log(`Update avatar response:`, res.data);
 
 			set({ authUser : res.data.data.user})
 			toast.success(res.data.message)
 		} catch (error) {
-			console.log(`Error updating avatar.`, error);
 			toast.error(error.response?.data?.message || 'Failed to update avatar')
 		}
 	},
@@ -111,13 +96,10 @@ export const useAuthStore = create( (set) => ({
 			const res = await axiosInstance.post('/auth/user', {
 				credential: credentialResponse.credential
 			});
-			console.log('Google auth response:', res.data);
-
-			// Update auth state with user data
+			
 			set({ authUser: res.data.data.user });
 			toast.success(res.data.message);
 		} catch (error) {
-			console.error('Google auth error:', error);
 			toast.error(error.response?.data?.message || 'Google authentication failed');
 		}
 	}

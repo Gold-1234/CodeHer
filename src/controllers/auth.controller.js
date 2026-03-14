@@ -8,6 +8,7 @@ import { ApiError } from "../utils/api-error.js";
 import { ApiResponse } from "../utils/api-response.js";
 
 export const register = async(req, res) => {
+	console.log('register request');
 	
 	const { email, password, name} = req.body;
 	if(!email || !password){
@@ -21,6 +22,8 @@ export const register = async(req, res) => {
 			}
 		})
 		if(existingUser){
+			console.log("user exists");
+			
 			throw new ApiError(400, "Email already exists, Please Login.");
 		}
 
@@ -35,7 +38,8 @@ export const register = async(req, res) => {
 				authProvider: 'EMAIL'
 			}
 		})
-
+		console.log("new user created", newUser);
+		
 		const token = jwt.sign({
 			id: newUser.id,
 		},
@@ -50,12 +54,13 @@ export const register = async(req, res) => {
 			token, 
 			{
 				httpOnly: true,
-				sameSite: "strict",
+				sameSite: "none",
 				secure: process.env.NODE_ENV !== "development",
 				maxAge: 1000 * 60 * 60 * 24 * 7 // 7 days
 			}
 		)
-
+		console.log(user);
+		
 		return res.status(201).json(
 			new ApiResponse(201,
 			{
@@ -87,7 +92,7 @@ export const register = async(req, res) => {
 
 export const login = async(req, res) => {
 	const { email, password } = req.body;
-
+	
 	try {
 		const user = await db.user.findUnique({
 			where: {
@@ -126,7 +131,7 @@ export const login = async(req, res) => {
 				token, 
 				{
 					httpOnly: true,
-					sameSite: "strict",
+					sameSite: "none",
 					secure: process.env.NODE_ENV !== "development",
 					maxAge: 1000 * 60 * 60 * 24 * 7 // 7 days
 				}
@@ -155,6 +160,8 @@ export const login = async(req, res) => {
 			)
 		} 
 		else {
+			console.log(error.message)
+
 			return res.status(500).json(
 				new ApiResponse(500, error.message, "Error Logging In")
 			)			
@@ -166,7 +173,7 @@ export const logout = async(req, res) => {
 	try {
 		res.clearCookie("jwt", {
 			httpOnly: true,
-			sameSite: "strict",
+			sameSite: "none",
 			secure: process.env.NODE_ENV!=="production"
 		})
 		res.status(200).json({
@@ -262,7 +269,6 @@ export const createAdmin = async(req, res) => {
 			})
 		)
 	} catch (error) {
-		console.log(error);
 		if(error instanceof ApiError){
 			return res.status(error.statusCode).json(
 				new ApiResponse(error.statusCode, null, error.message)
@@ -278,23 +284,24 @@ export const createAdmin = async(req, res) => {
 }
 
 export const googleAuth = async(req, res) => {
+	
 	try {
 		const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
-
+		
 		const credential = req.body.credential;
-
+		
 		// Verify the Google JWT token
 		const ticket = await client.verifyIdToken({
 			idToken: credential,
 			audience: process.env.GOOGLE_CLIENT_ID,
 		});
-
+		
 		const payload = ticket.getPayload();
 
 		if (!payload) {
 			throw new ApiError(400, 'Invalid Google token');
 		}
-
+		
 		const { sub: googleId, email, name, picture: image } = payload;
 
 		let user = await db.user.findFirst({
@@ -305,7 +312,7 @@ export const googleAuth = async(req, res) => {
 				]
 			}
 		});
-
+	
 		if (!user) {
 			user = await db.user.create({
 				data: {
@@ -343,12 +350,12 @@ export const googleAuth = async(req, res) => {
 			token,
 			{
 				httpOnly: true,
-				sameSite: "strict",
+				sameSite: "none",
 				secure: process.env.NODE_ENV !== "development",
 				maxAge: 1000 * 60 * 60 * 24 * 7 // 7 days
 			}
 		);
-
+		
 		res.status(200).json(
 			new ApiResponse(200, {
 				user: {
@@ -363,7 +370,6 @@ export const googleAuth = async(req, res) => {
 		);
 
 	} catch (error) {
-		console.error('Google auth error:', error);
 		if (error instanceof ApiError) {
 			return res.status(error.statusCode).json(
 				new ApiResponse(error.statusCode, null, error.message)

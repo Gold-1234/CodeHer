@@ -15,7 +15,6 @@ export const getAllSubmissions = async( req, res ) => {
 			new ApiResponse(200, submissions, "Submissions fetched succesfully.")
 		)
 	} catch (error) {
-		console.log(error);
 		if(error instanceof ApiError){
 			return res.status(error.statusCode).json(
 				new ApiResponse(error.statusCode, null, error.message)
@@ -30,8 +29,6 @@ export const getAllSubmissions = async( req, res ) => {
 }
 
 export const getSubmissionForProblem = async( req, res ) => {
-	console.log('hello');
-	
 	try {
 		const { problemId } = req.params
 		const userId = req.user.id;
@@ -47,7 +44,6 @@ export const getSubmissionForProblem = async( req, res ) => {
 			new ApiResponse(200, submissions, "Submissions for problem fetched.")
 		)
 	} catch (error) {
-		console.log(error);
 		if(error instanceof ApiError){
 			return res.status(error.statusCode).json(
 				new ApiResponse(error.statusCode, null, error.message)
@@ -73,7 +69,6 @@ export const getSubmissionForProblemCount = async( req, res ) => {
 			new ApiResponse(200, submissionCount, "Submission count fetched.")
 		)
 	} catch (error) {
-		console.log(error);
 		if(error instanceof ApiError){
 			return res.status(error.statusCode).json(
 				new ApiResponse(error.statusCode, null, error.message)

@@ -16,8 +16,6 @@ export const SetsPage = () => {
   }, [getList]); 
 
   useEffect(() => {
-    console.log("no user list ig")
-    console.log(lists);
   }, [lists, getList])
 
   if (isLoading) {

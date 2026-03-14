@@ -23,9 +23,6 @@ export const ProblemList = ( { filters, user } ) => {
 
   const add = (e, problem) => {
     e.stopPropagation()
-    console.log(e)
-    console.log(problem);
-    
   }
 
   useEffect(() => {
@@ -45,15 +42,11 @@ export const ProblemList = ( { filters, user } ) => {
 
   useEffect(() => {
     const el = scrollRef.current  
-    console.log(el);
     if( !el || !totalPages ) return;  
-    console.log( totalPages );
 
     const handleScroll = () => {
-      console.log('scrolling')
       if( el.scrollTop + el.clientHeight + 300 >= el.scrollHeight && !isProblemsLoading )
         {
-          console.log('setting loading to true');
           if( page < totalPages)
             setPage((prev) => prev + 1);
 
@@ -131,7 +124,6 @@ export const ProblemList = ( { filters, user } ) => {
                   } else {
                     removeFromList(problem)
                   }
-                  console.group(list)
                 }}/>
               }
           <span className="truncate font-medium text-base">{index + 1}. {problem.title}</span>

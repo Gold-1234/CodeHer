@@ -6,7 +6,6 @@ export const Solution = ({ problem }) => {
   const [ language, setLanguage ] = useState('javascript')
   
   const handleSelect = ( event ) => {
-	console.log( event.target.value );
 	return (
 		setLanguage( event.target.value )
 	)

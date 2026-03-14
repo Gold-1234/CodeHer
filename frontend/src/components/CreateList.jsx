@@ -19,10 +19,6 @@ export const CreateList = ({ existingLists }) => {
   const [selectedList, setSelectedList] = useState("")
   const [name, setName] = useState("")
   const [description, setDescription] = useState("")
-
-  useEffect(() => {
-    console.log('selected list: ', selectedList);
-  }, [selectedList])
   
   if (!isCreatingList) return null
 

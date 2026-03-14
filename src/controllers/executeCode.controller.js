@@ -9,8 +9,10 @@ export const submitCode = async (req, res) => {
 		const { source_code, stdin, expected_outputs, language_id, problemId } = req.body;
 
 		const userId = req.user.id;
-		console.log(userId);
-		console.log(problemId);
+
+		if (!source_code || !language_id) {
+			throw new ApiError(400, "Source code and language ID are required.");
+		}
 		
 		// Validate test cases
 		if(
@@ -22,11 +24,13 @@ export const submitCode = async (req, res) => {
 			throw new ApiError(400, "Invalid or missing test cases.")
 		}
 		
+		const base64SourceCode = Buffer.from(source_code).toString('base64');
+
 		// prepare each test case for judge0batch
 		const submissions = stdin.map((input) => ({
-			source_code,
+			source_code: base64SourceCode,
 			language_id,
-			stdin: input
+			stdin: input ? Buffer.from(input).toString('base64') : null
 		}))
 
 		// send batch to judge0 for submission to get tokens
@@ -57,8 +61,6 @@ export const submitCode = async (req, res) => {
 			time: result.time ? `${result.time} s` : undefined,
 		}
 		})
-
-		console.log(detailedResult);
 
 		const submission = await db.Submission.create({
 			data : {
@@ -134,7 +136,6 @@ export const submitCode = async (req, res) => {
 			new ApiResponse(200, submissionWithTestcases, "Code execution successfull.")
 		)
 	} catch (error) {
-		console.log(error);
 		if(error instanceof ApiError){
 			return res.status(error.statusCode).json(
 				new ApiResponse(error.statusCode, null, error.message)
@@ -150,11 +151,15 @@ export const submitCode = async (req, res) => {
 
 export const executeCode = async (req, res) => {
 	try {
+		console.log("executing code");
 		const { source_code, stdin, expected_outputs, language_id, problemId } = req.body;
-
+		console.log(source_code, stdin, expected_outputs, language_id, problemId);
+		
 		const userId = req.user.id;
-		console.log(userId);
-		console.log(problemId);
+
+		if (!source_code || !language_id) {
+			throw new ApiError(400, "Source code and language ID are required.");
+		}
 		
 		// Validate test cases
 		if(
@@ -165,16 +170,24 @@ export const executeCode = async (req, res) => {
 		){
 			throw new ApiError(400, "Invalid or missing test cases.")
 		}
+		console.log("stdin input", stdin);
+		
+		const base64SourceCode = Buffer.from(source_code).toString('base64');
+		console.log(base64SourceCode);
+		
+		// stdin =  input ? Buffer.from(input).toString('base64') : null
+		// console.log("stdin:::", stdin);
 		
 		// prepare each test case for judge0batch
 		const submissions = stdin.map((input) => ({
-			source_code,
+			source_code: base64SourceCode,
 			language_id,
-			stdin: input
+			stdin: input ? Buffer.from(input).toString('base64') : null
 		}))
-
+		console.log("submissions : ", submissions)
 		// send batch to judge0 for submission to get tokens
 		const submitResponse = await submitBatch(submissions);
+		
 		const tokens = submitResponse.map((res) => res.token);
 
 		const results = await pollBatchResults(tokens);
@@ -199,10 +212,9 @@ export const executeCode = async (req, res) => {
 			status_id: result.status.id,
 			memory: result.memory ? `${result.memory} KB` : undefined,
 			time: result.time ? `${result.time} s` : undefined,
+			message: result.message
 		}
 		})
-
-		console.log(detailedResult);
 
 		// const submission = await db.Submission.create({
 		// 	data : {
@@ -261,11 +273,12 @@ export const executeCode = async (req, res) => {
 		// 	time : result.time,
 		// 	statusSum : allPassed ? Status.Accepted : Status.Wrong_Answer
 		// }))
+		console.log("detailed result: ", detailedResult);
+		
 		return res.status(200).json(
 			new ApiResponse(200, detailedResult, "Code execution successfull.")
 		)
 	} catch (error) {
-		console.log(error);
 		if(error instanceof ApiError){
 			return res.status(error.statusCode).json(
 				new ApiResponse(error.statusCode, null, error.message)

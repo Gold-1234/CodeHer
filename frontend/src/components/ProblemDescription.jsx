@@ -16,10 +16,6 @@ export const ProblemDescription = ({problem}) => {
   }
 
   useEffect(() => {
-    console.log(isHintOpen);
-  }, [ isHintOpen ])
-
-  useEffect(() => {
     const tags = tagsRef.current
     tags.classList.toggle("hidden")
   }, [ isTagsOpen ])
@@ -27,7 +23,6 @@ export const ProblemDescription = ({problem}) => {
   useEffect(() => {
     (( ) => {
       const hint = hintRef.current
-      console.log(hint);
       hint.classList.toggle("hidden")
     })()
   }, [ isHintOpen ])

@@ -4,8 +4,6 @@ import { ApiError } from "../utils/api-error.js";
 import { ApiResponse } from "../utils/api-response.js";
 
 export const createProblem = async( req, res ) => {
-	console.log("create problem request");
-	
 	const { title, description, difficulty, tags, examples, constraints, testcases, codeSnippets, referenceSolutions, hints, editorial} = req.body;
 
 	if( !referenceSolutions ){
@@ -44,7 +42,6 @@ export const createProblem = async( req, res ) => {
 				if(result.status.id !== 3){
 					throw new ApiError(400, `Testcase ${i+1} failed`)
 				}
-				console.log(`Result -- ${JSON.stringify(result)}`);
 			}
 
 			const problem = await db.problem.create({
@@ -70,7 +67,6 @@ export const createProblem = async( req, res ) => {
 		}
 		
 	} catch (error) {
-		console.log(error);
 		if(error instanceof ApiError){
 			return res.status(error.statusCode).json(
 				new ApiResponse(error.statusCode, null, error.message)
@@ -87,17 +83,14 @@ export const createProblem = async( req, res ) => {
 export const getAllProblems = async( req, res ) => {
 	try {
 		const { page = 1, limit = 10 } = req.query;
-		console.log(req.query);
-		
 		const skip = parseInt(parseInt( page ) - 1) * parseInt( limit )
-		
+
 		const problems = await db.problem.findMany({
 			skip: skip,
 			take: parseInt(limit)
 		});
 		const count = await db.problem.count()
 		const totalPages = Math.ceil(count/parseInt(limit))
-		console.log(totalPages);
 		
 		if(!problems) {
 			throw new ApiError(404, "No problems found.")
@@ -197,10 +190,8 @@ export const updateProblem = async(	req, res ) => {
 		throw new ApiError(400, "Access Denied, Admin only.");
 	}
 
-	try {		
+	try {
 		if (referenceSolutions) {
-			console.log("running the if block for reference solution change");
-			
 			for(const [language, solutionCode] of Object.entries(referenceSolutions)){
 				
 				const languageId = getJudge0languageId(language);
@@ -229,7 +220,6 @@ export const updateProblem = async(	req, res ) => {
 					if(result.status.id !== 3){
 						throw new ApiError(400, `Testcase ${i+1} failed.`)
 					}
-					console.log(`Result -- ${JSON.stringify(result)}`);
 				}
 			}
 		}
@@ -259,7 +249,6 @@ export const updateProblem = async(	req, res ) => {
 		
 		
 	} catch (error) {
-		console.log(error);
 		if(error instanceof ApiError){
 			return res.status(200).json(
 				new ApiResponse(error.statusCode, null, error.message)
@@ -274,9 +263,7 @@ export const updateProblem = async(	req, res ) => {
 }
 
 export const getProblemSolvedByUser = async( req, res ) => {
-	const userId = req.user.id; 
-	console.log('getProblemSolvedByUser');
-	
+	const userId = req.user.id;
 	try {
 		const solvedProblems = await db.Problem.findMany({
 			where: {
@@ -299,8 +286,6 @@ export const getProblemSolvedByUser = async( req, res ) => {
 			new ApiResponse(200, solvedProblems, "Solved problems found.")
 		)
 	} catch (error) {
-		console.log(error);
-		
 		if(error instanceof ApiError){
 			return res.status(error.statusCode).json(
 				new ApiResponse(error.statusCode, null, error.message)

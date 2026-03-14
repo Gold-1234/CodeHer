@@ -41,13 +41,13 @@ function App() {
       <Toaster />
       <Routes>
         {/* Root - Landing Page */}
-        <Route path="/" element={<LandingPage />} />
+        <Route path="/" element={authUser ? <Navigate to="/home" replace/>: <LandingPage/>} />
 
         {/* Auth routes */}
         <Route element={<AuthLayout />}>
           <Route
             path="/login"
-            element={authUser ? <Navigate to="/home" replace /> : <LoginPage />}
+            element={authUser ? <Navigate to="/home" replace /> : <LoginPage/> }
           />
           <Route
             path="/signup"
@@ -60,7 +60,7 @@ function App() {
 
 
         {/* Protected routes */}
-        <Route path="/home" element={<MainLayout />}>
+        <Route path="/home" element={authUser ? <MainLayout /> : <Navigate to="/login" replace/>}>
           <Route
             index
             element={

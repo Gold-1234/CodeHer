@@ -74,12 +74,10 @@ export const ProblemPage = () => {
     const handler = ref.current;
     const mouseDown = (e) => {
       if (e.target === handler) {
-        // console.log("mousedown", e.target);
         fn(true);
       }
     };
     const mouseUp = (e) => {
-      //   console.log("mouseup", e.target);
       fn(false);
     };
     document.addEventListener("mousedown", mouseDown);
@@ -98,17 +96,13 @@ export const ProblemPage = () => {
   }, []);
 
   useEffect(() => {
-    console.log(testcaseOutput);
   }, [ testcaseOutput ])
 
   const select = (index) => {
-
-    console.log(index);
     setIndex(index);
   };
 
   const openSection = (section) => {
-    console.log(section);
     setSection(section);
   };
 
