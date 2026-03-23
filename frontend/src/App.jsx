@@ -22,7 +22,7 @@ function App() {
   const { authUser, checkAuth, isCheckingAuth } = useAuthStore();
   const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID
 
-  useEffect(() => {
+  useEffect(() => { 
     checkAuth();
   }, [checkAuth]);
 

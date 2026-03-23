@@ -6,23 +6,33 @@ import path from 'path';
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [
+
     react(),
-    tailwindcss()
+    tailwindcss(),
   ],
+  define: {
+    global: "window",
+  },
   base : '/',
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
     },
   },
-  // server: {
-  //   proxy: {
-  //     '/api': {
-  //       target: 'http://localhost:8080',
-  //       changeOrigin: true,
-  //     },
-  //   },
-  // }
-  
+  optimizeDeps: {
+    include: [
+      "quill",
+      "react-quilljs",
+      "@google/model-viewer",
+      "lit",
+      "lit-html",
+      "lit-element",
+      ],
+  },
+   build: {
+    commonjsOptions: {
+      transformMixedEsModules: true
+    },
+  }
 })
 

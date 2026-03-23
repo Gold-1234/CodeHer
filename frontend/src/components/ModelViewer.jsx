@@ -1,6 +1,5 @@
 import { useEffect } from "react";
 import "../styles.css"; // Your CSS file
-import '@google/model-viewer'; 
 
 const ModelViewer = () => {
   useEffect(() => {
@@ -24,22 +23,6 @@ const ModelViewer = () => {
 
   viewer.addEventListener("progress", onProgress);
 
-  // ✅ Delay to let model-viewer initialize before accessing `loaded`
-  // const checkLoaded = () => {
-  //   if (viewer.loaded && typeof viewer.loaded.then === "function") {
-  //     viewer.loaded.then(() => {
-  //       console.log("✅ GLB Model fully loaded");
-  //     });
-  //   } else {
-  //     // Try again after a short delay
-  //     console.log('not loaded');
-      
-  //     setTimeout(checkLoaded, 1000);
-  //   }
-  // };
-
-  // checkLoaded();
-
   return () => {
     viewer.removeEventListener("progress", onProgress);
   };
@@ -55,6 +38,8 @@ const ModelViewer = () => {
       camera-orbit="40deg 55deg auto"
       shadow-intensity="1"
       autoplay
+      animation_name="Take 001"
+
       style={{ width: "100%", height: "500px", backgroundColor: "transparent" }}
     >
       <div className="progress-bar hide" slot="progress-bar">

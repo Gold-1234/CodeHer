@@ -41,6 +41,7 @@ const SignupPage = () => {
 	const onSubmit = async( data ) => {	
 		try {
 			const response = await signUp(data);
+			console.log("response from signup :", response);
 			
 			if(!data.name || !data.email || !data.password){
 				throw new Error("Missing fields.")
@@ -49,6 +50,7 @@ const SignupPage = () => {
 						navigate('/login')
 						
 				} catch (error) {
+					
 					}
 				}, 500);
 		} catch (error) {

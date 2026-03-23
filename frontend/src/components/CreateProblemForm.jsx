@@ -641,7 +641,7 @@ const CreateProblemForm = ({ formData, mode }) => {
   }, [ formData, reset ])
 
   const loadSampleData = () => {
-    const sampleData = sampleType === "DP" ? sampledpData : sampleStringData
+    const sampleData = sampleType === "DP" ? sampledpData : sampleStringProblem
   
     replaceTags(sampleData.tags.map((tag) => tag));
     replaceTestcases(sampleData.testcases.map((tc) => tc));
@@ -1177,7 +1177,7 @@ const CreateProblemForm = ({ formData, mode }) => {
 
           
          
-          <div className="w-full  m-5 border-1 border-secondary-content rounded-lg">
+          <div className="w-full  m-5 border border-secondary-content rounded-lg">
             <h1 className="text-2xl font-bold m-7"> Editorial </h1>
             <div className="flex flex-1 flex-col overflow-auto mx-5 h-100 text-lg">
               <Controller

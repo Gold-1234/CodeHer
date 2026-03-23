@@ -146,7 +146,7 @@ export const ProblemList = ( { filters, user } ) => {
         {/* Admin actions */}
         {admin && (
           <div className="flex items-center gap-3 justify-end">
-            <button onClick={(e) => { e.stopPropagation(); handleDelete( e, problem.id, index ) }}>
+            <button disabled={true} onClick={(e) => { e.stopPropagation(); handleDelete( e, problem.id, index ) }}>
               {deletingProblem[ index ] ? <Loader2 className='animate-spin h-5 w-5'/> : <Trash className="h-5 w-5 text-red-500 hover:text-red-600" />}
             </button>
             <button onClick={(e) => { e.stopPropagation() ;handleEdit( e, problem.id ) }}>

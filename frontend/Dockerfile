@@ -1,7 +1,7 @@
-FROM node:18-alpine AS build
+FROM node:20 AS build
 WORKDIR /app
 COPY package*.json ./
-RUN npm install
+RUN npm ci --include=optional
 COPY . .
 RUN npm run build
 

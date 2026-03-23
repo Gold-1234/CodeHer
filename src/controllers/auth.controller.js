@@ -59,7 +59,7 @@ export const register = async(req, res) => {
 				maxAge: 1000 * 60 * 60 * 24 * 7 // 7 days
 			}
 		)
-		console.log(user);
+		console.log(newUser);
 		
 		return res.status(201).json(
 			new ApiResponse(201,
@@ -77,6 +77,8 @@ export const register = async(req, res) => {
 			"Registered successfully, Please login."
 		))
 	} catch (error) {
+		console.log(error);
+		
 		if(error instanceof ApiError){
 			return res.status(200).json(
 				new ApiResponse(error.statusCode, null, error.message)
@@ -106,7 +108,7 @@ export const login = async(req, res) => {
 
 		// Check if user signed up with Google (no password)
 		if (user.authProvider === 'GOOGLE') {
-			throw new ApiError(400, "This account uses Google authentication. Please sign in with Google.")
+			throw new ApiError(400, "Please sign in with Google.")
 		}
 
 		// Check if user has a password (should have one for EMAIL auth)
@@ -171,12 +173,11 @@ export const login = async(req, res) => {
 
 export const logout = async(req, res) => {
 	try {
-		res.clearCookie("jwt", {
+		return res.clearCookie("jwt", {
 			httpOnly: true,
 			sameSite: "none",
-			secure: process.env.NODE_ENV!=="production"
-		})
-		res.status(200).json({
+			secure: process.env.NODE_ENV==="production"
+		}).status(200).json({
 			success: true,
 			message: "Logout Successfull"
 		})
@@ -281,6 +282,15 @@ export const createAdmin = async(req, res) => {
 	}
 
 
+}
+
+
+export const googleLogout = async(req, res) => {
+	try {
+		
+	} catch (error) {
+		
+	}
 }
 
 export const googleAuth = async(req, res) => {

@@ -30,6 +30,8 @@ export const useAuthStore = create( (set) => ({
 			set({ authUser : res.data.user})
 			if(!res.data.success){
 				toast.error(res.data.message)
+				console.log(res.data);
+				
 			} else {
 				toast.success(res.data.message)
 
@@ -66,7 +68,6 @@ export const useAuthStore = create( (set) => ({
 		set({ isCheckingAuth : true })
 		try {
 			const res = await axiosInstance.post('/auth/logout', data)
-
 			set({ authUser : null})
 			if(!res.data.success){
 				toast.error(res.data.message)

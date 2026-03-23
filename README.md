@@ -6,7 +6,6 @@ CodeHer is a feature-rich platform for coding challenges, problem creation, and 
 
 ## 🚀 Features
 
-- **State-of-the-art Admin Panel:** Manage users, problems, and roles with ease.
 - **Notion-style Rich Text Editor:** Create and format problems intuitively.
 - **Smooth & Intuitive User Experience:** Fast, responsive, and user-friendly interface.
 - **Authentication:** Supports Email + OAuth Login (Google, GitHub).

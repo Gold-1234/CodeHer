@@ -24,6 +24,7 @@ const ModelViewer = () => {
       }
     };
 
+
     const onLoad = () => {
       console.log("✅ GLB Model has been loaded successfully!");
     };

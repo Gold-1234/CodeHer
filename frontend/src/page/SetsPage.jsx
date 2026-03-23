@@ -20,7 +20,7 @@ export const SetsPage = () => {
 
   if (isLoading) {
     return (
-      <div className="flex justify-center items-center h-screen">
+      <div className="flex justify-center items-center h-screen w-screen">
         <span className="loading loading-dots loading-lg"></span>
       </div>
     );
