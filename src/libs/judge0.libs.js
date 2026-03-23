@@ -63,6 +63,7 @@ export const pollBatchResults = async ( tokens ) => {
 		if(isAllDone) {
 			// Decode the results
 			console.log("all done")
+			// console.log(results)
 			return results.map(result => ({
 				...result,
 				stdout: decodeBase64(result.stdout),

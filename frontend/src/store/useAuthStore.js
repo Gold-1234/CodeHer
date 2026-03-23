@@ -30,7 +30,6 @@ export const useAuthStore = create( (set) => ({
 			set({ authUser : res.data.user})
 			if(!res.data.success){
 				toast.error(res.data.message)
-				console.log(res.data);
 				
 			} else {
 				toast.success(res.data.message)
@@ -99,6 +98,7 @@ export const useAuthStore = create( (set) => ({
 			});
 			
 			set({ authUser: res.data.data.user });
+
 			toast.success(res.data.message);
 		} catch (error) {
 			toast.error(error.response?.data?.message || 'Google authentication failed');

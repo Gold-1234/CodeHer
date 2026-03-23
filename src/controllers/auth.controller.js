@@ -55,7 +55,7 @@ export const register = async(req, res) => {
 			{
 				httpOnly: true,
 				sameSite: "none",
-				secure: process.env.NODE_ENV !== "development",
+				secure: process.env.NODE_ENV === "production",
 				maxAge: 1000 * 60 * 60 * 24 * 7 // 7 days
 			}
 		)
@@ -94,7 +94,7 @@ export const register = async(req, res) => {
 
 export const login = async(req, res) => {
 	const { email, password } = req.body;
-	
+	console.log("login request")
 	try {
 		const user = await db.user.findUnique({
 			where: {
@@ -103,7 +103,7 @@ export const login = async(req, res) => {
 		})
 
 		if(!user){
-			throw new ApiError(400, "Couldn't find your account, Please register.")
+			throw new ApiError(400, "Invalid email or password.")
 		}
 
 		// Check if user signed up with Google (no password)
@@ -125,7 +125,7 @@ export const login = async(req, res) => {
 		const token = jwt.sign(
 			{id: user.id},
 			process.env.JWT_SECRET,
-			{expiresIn: 1000 * 60 * 60 * 24 * 7}
+			{expiresIn: "7d"}
 		)
 		
 		res.cookie(
@@ -134,12 +134,12 @@ export const login = async(req, res) => {
 				{
 					httpOnly: true,
 					sameSite: "none",
-					secure: process.env.NODE_ENV !== "development",
+					secure: process.env.NODE_ENV === "production",
 					maxAge: 1000 * 60 * 60 * 24 * 7 // 7 days
 				}
 			)
 	
-		res.status(201).json(
+		return res.status(200).json(
 				new ApiResponse(
 					200, 
 					{
@@ -155,6 +155,7 @@ export const login = async(req, res) => {
 					"Logged In"
 				)
 			)
+
 	} catch (error) {
 		if(error instanceof ApiError){
 			return res.status(400).json(
@@ -190,7 +191,7 @@ export const logout = async(req, res) => {
 
 export const check = async(req, res) => {
 	try {
-		res.status(200).json(
+		return res.status(200).json(
 			new ApiResponse(200, {
 				success: true, 
 				message: "User authenticated successfully",
@@ -284,15 +285,6 @@ export const createAdmin = async(req, res) => {
 
 }
 
-
-export const googleLogout = async(req, res) => {
-	try {
-		
-	} catch (error) {
-		
-	}
-}
-
 export const googleAuth = async(req, res) => {
 	
 	try {
@@ -338,7 +330,6 @@ export const googleAuth = async(req, res) => {
 			const updateData = {};
 			if (!user.image && image) updateData.image = image;
 			if (!user.googleId) updateData.googleId = googleId;
-			if (user.authProvider !== 'GOOGLE') updateData.authProvider = 'GOOGLE';
 
 			if (Object.keys(updateData).length > 0) {
 				user = await db.user.update({
@@ -361,12 +352,12 @@ export const googleAuth = async(req, res) => {
 			{
 				httpOnly: true,
 				sameSite: "none",
-				secure: process.env.NODE_ENV !== "development",
+				secure: process.env.NODE_ENV === "production",
 				maxAge: 1000 * 60 * 60 * 24 * 7 // 7 days
 			}
 		);
 		
-		res.status(200).json(
+		return res.status(200).json(
 			new ApiResponse(200, {
 				user: {
 					id: user.id,

@@ -24,10 +24,10 @@ export const createProblem = async( req, res ) => {
 			}
 
 			const submissions = testcases.map(({input, output}) => ({
-				source_code: solutionCode,
+				source_code: Buffer.from(solutionCode).toString("base64"),
 				language_id: languageId,
-				stdin: input,
-				expected_output: output,
+				stdin: input ? Buffer.from(input).toString("base64") : null,
+				expected_output: output ? Buffer.from(output).toString("base64") : null,
 			})) 
 			// get tokens
 			const submissionResults = await submitBatch(submissions);			
@@ -35,13 +35,14 @@ export const createProblem = async( req, res ) => {
 
 			// poll for results
 			const results = await pollBatchResults(tokens)
-			
+			console.log(results)
 			for(let i = 0; i < results.length; i++){
 
 				const result = results[i]
 				if(result.status.id !== 3){
 					throw new ApiError(400, `Testcase ${i+1} failed`)
 				}
+				console.log(result)
 			}
 
 			const problem = await db.problem.create({

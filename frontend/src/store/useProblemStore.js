@@ -22,6 +22,7 @@ const useProblemStore = create (( set, get ) => ({
 	submitProblem : async ( value, navigation ) => {
 		try {
 			set({ isCreatingProblem : true })
+			console.log(value.referenceSolutions.javascript);
 			
 			const res = await axiosInstance.post('/problem/create', value)
 			

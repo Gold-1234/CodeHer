@@ -1,11 +1,8 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { useForm, useFieldArray, Controller } from "react-hook-form";
 import { z } from "zod";
-import {axiosInstance} from "../lib/axios"
 import {useNavigate, useParams} from "react-router-dom";
 import { zodResolver } from "@hookform/resolvers/zod";
-import toast from "react-hot-toast";
-import { DevTool } from "@hookform/devtools";
 import {
   Plus,
   Trash2,
@@ -112,7 +109,7 @@ const sampledpData = {
     },
   ],
   codeSnippets: {
-    javascript: `/**
+    "javascript": `/**
 * @param {number} n
 * @return {number}
 */
@@ -317,9 +314,9 @@ const sampleStringProblem = {
   difficulty: "EASY",
   tags: ["String", "Two Pointers"],
   constraints:
-    "1 <= s.length <= 2 * 10^5\ns consists only of printable ASCII characters.",
+    ["1 <= s.length <= 2 * 10^5\ns consists only of printable ASCII characters."],
   hints:
-    "Consider using two pointers, one from the start and one from the end, moving towards the center.",
+    ["Consider using two pointers, one from the start and one from the end, moving towards the center."],
   editorial:
     "We can use two pointers approach to check if the string is a palindrome. One pointer starts from the beginning and the other from the end, moving towards each other.",
   testcases: [
@@ -336,25 +333,25 @@ const sampleStringProblem = {
       output: "true",
     },
   ],
-  examples: {
-    JAVASCRIPT: {
+  examples: [
+    {
       input: 's = "A man, a plan, a canal: Panama"',
       output: "true",
       explanation: '"amanaplanacanalpanama" is a palindrome.',
     },
-    PYTHON: {
+    {
       input: 's = "A man, a plan, a canal: Panama"',
       output: "true",
       explanation: '"amanaplanacanalpanama" is a palindrome.',
     },
-    JAVA: {
+    {
       input: 's = "A man, a plan, a canal: Panama"',
       output: "true",
       explanation: '"amanaplanacanalpanama" is a palindrome.',
     },
-  },
+  ],
   codeSnippets: {
-    JAVASCRIPT: `/**
+    javascript: `/**
    * @param {string} s
    * @return {boolean}
    */
@@ -379,7 +376,7 @@ const sampleStringProblem = {
     console.log(result ? "true" : "false");
     rl.close();
   });`,
-    PYTHON: `class Solution:
+    python: `class Solution:
       def isPalindrome(self, s: str) -> bool:
           # Write your code here
           pass
@@ -396,7 +393,7 @@ const sampleStringProblem = {
       
       # Output result
       print(str(result).lower())  # Convert True/False to lowercase true/false`,
-    JAVA: `import java.util.Scanner;
+    java: `import java.util.Scanner;
 
 public class Main {
     public static String preprocess(String s) {
@@ -418,7 +415,7 @@ public class Main {
 `,
   },
   referenceSolutions: {
-    JAVASCRIPT: `/**
+    javascript: `/**
    * @param {string} s
    * @return {boolean}
    */
@@ -458,7 +455,7 @@ public class Main {
     console.log(result ? "true" : "false");
     rl.close();
   });`,
-    PYTHON: `class Solution:
+    python: `class Solution:
       def isPalindrome(self, s: str) -> bool:
           # Convert to lowercase and keep only alphanumeric characters
           filtered_chars = [c.lower() for c in s if c.isalnum()]
@@ -478,7 +475,7 @@ public class Main {
       
       # Output result
       print(str(result).lower())  # Convert True/False to lowercase true/false`,
-    JAVA: `import java.util.Scanner;
+    java: `import java.util.Scanner;
 
 public class Main {
     public static String preprocess(String s) {
@@ -515,14 +512,12 @@ const CreateProblemForm = ({ formData, mode }) => {
   const [content, setContent] = useState("");
   const [ language, setLanguage ] = useState('javascript');
   const [ solutionLanguage, setSolutionLanguage ] = useState('javascript');
-  const [ isLoading, setIsLoading ] = useState(false)
   
-  const { submitProblem, updateProblem } = useProblemStore()
+  const { submitProblem, updateProblem, isCreatingProblem } = useProblemStore()
   const navigation = useNavigate()
 
   useEffect(() => setLanguage("javascript"), [])
   useEffect(() => setSolutionLanguage("javascript"), [])
-  useEffect(() => setIsLoading(false), [])
 
   useEffect(()=> {
   }, [language])
@@ -586,6 +581,7 @@ const CreateProblemForm = ({ formData, mode }) => {
   fields: exampleFields,
   append: appendExample,
   remove: removeExample,
+  replace: replaceExamples
   } = useFieldArray({
       control,
       name: "examples",
@@ -594,7 +590,7 @@ const CreateProblemForm = ({ formData, mode }) => {
     fields: tagFields,
     append: appendTag,
     remove: removeTag,
-    replace: replaceTags,
+    replace: replaceTags
   } = useFieldArray({
     control,
     name: "tags",
@@ -603,7 +599,7 @@ const CreateProblemForm = ({ formData, mode }) => {
     fields: constraintFields,
     append: appendConstraint,
     remove: removeConstraint,
-    replace: replaceconstraints,
+    replace: replaceconstraints
   } = useFieldArray({
     control,
     name: "constraints",
@@ -612,7 +608,7 @@ const CreateProblemForm = ({ formData, mode }) => {
     fields: hintFields,
     append: appendHint,
     remove: removeHint,
-    replace: replaceHint,
+    replace: replaceHint
   } = useFieldArray({
     control,
     name: "hints",
@@ -645,7 +641,9 @@ const CreateProblemForm = ({ formData, mode }) => {
   
     replaceTags(sampleData.tags.map((tag) => tag));
     replaceTestcases(sampleData.testcases.map((tc) => tc));
-
+    replaceExamples(sampleData.examples.map((ex) => ex));
+    replaceconstraints(sampleData.constraints.map((constraint) => constraint));
+    replaceHint(sampleData.hints.map((hint) => hint));
     reset(sampleData);
     
   }
@@ -654,8 +652,8 @@ const CreateProblemForm = ({ formData, mode }) => {
 
  
   const onSubmit = async ( value ) => {
+    
     try {
-      setIsLoading(true)
       if(!value) throw new Error("Values required")
         if( mode === 'add'){
           await submitProblem(value, navigation)
@@ -665,9 +663,7 @@ const CreateProblemForm = ({ formData, mode }) => {
       localStorage.removeItem("formData")
     } catch (error) {
       setError("root", { message: "Fill required fields."})
-    } finally {
-      setIsLoading(false)
-    }
+    } 
   }
 
   return (
@@ -696,7 +692,7 @@ const CreateProblemForm = ({ formData, mode }) => {
             <div className="flex flex-row md:flex-row gap-3 mt-4 md:mt-0">
             <button type="submit" className="btn btn-primary text-white">
               {
-                isLoading ? <span className="loading loading-spinner text-white"></span> : "Submit"
+                isCreatingProblem ? <span className="loading loading-spinner text-white"></span> : "Submit"
               }
               </button>
                 <div className="join">
@@ -705,7 +701,7 @@ const CreateProblemForm = ({ formData, mode }) => {
                     className={`btn join-item ${
                       sampleType === "DP" ? "btn-active" : ""
                     }`}
-                    onClick={() => setSampleType("array")}
+                    onClick={() => setSampleType("DP")}
                   >
                     DP Problem
                   </button>
@@ -734,7 +730,7 @@ const CreateProblemForm = ({ formData, mode }) => {
           
         <div className="flex flex-col items-center">
         <div className=" w-full overflow-x-hidden grid grid-cols-1 md:grid-cols-2">
-          <div className="border-secondary-content border-1 flex-1 rounded-2xl m-5 p-5">
+          <div className="border-secondary-content border flex-1 rounded-2xl m-5 p-5">
             <fieldset className="fieldset">
               <p className="text-lg font-bold">Problem Name</p>
               <input
@@ -1010,7 +1006,7 @@ const CreateProblemForm = ({ formData, mode }) => {
             </div>
           </div>
 
-          <div className="border-secondary-content border-1 flex-1 rounded-2xl m-5 p-5">
+          <div className="border-secondary-content border flex-1 rounded-2xl m-5 p-5">
             <div className="flex items-center items-between ">
                 <p className="text-lg font-bold flex-1">Examples</p>
                 <button

@@ -29,7 +29,6 @@ export const useExecutionStore = create (( set, get ) => ({
 			set({ executingCode: true })
 			const res = await axiosInstance.post( '/execute-code/', value)
 			if(res){
-			console.log("response", res);
 			
 			set({ executionOutput: res.data.data.statusSum })
 			set({ testcaseOutput: res.data.data})

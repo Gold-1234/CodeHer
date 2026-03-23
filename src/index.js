@@ -10,7 +10,7 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }))
 app.use(cors({
-  origin: process.env.FRONTEND_URL,
+  origin: process.env.NODE_ENV === 'production' ? process.env.FRONTEND_URL: ["http://localhost:4173", "http://localhost:5173"],
   credentials: true
 }))
 app.use((req, res, next) => {
